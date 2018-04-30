@@ -1,5 +1,5 @@
 const util = require('util')
-const bootstrap = require('./index');
+const bootstrap = require('../index');
 
 let config = {
   authRequired: false,
@@ -29,22 +29,6 @@ let res = {
     res.headers[name] = value;
   }
 }
-
-const createTableQuery = `
-mutation($input:CreateTableInput!){
-  createTable(input: $input){
-    table{
-      id
-      application {
-          id
-      }
-      name
-      description
-      dateCreation
-    }
-  }
-}
-`
 
 function handler(req, res, ctx) {
   ctx.jwt_token = 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJlbnZpcm9ubWVudCI6InRlc3QiLCJ1c2VybmFtZSI6Im1oZXJuYW5kZXpAZHJvbmVkZXBsb3kuY29tIiwiZXhwIjoxNTI3MDEyNTcyfQ.4s8O7e1ZA9CBAgBwC2Hn9ZXLVZA0hz-ZJFglvvW6tcDOiq9eXA6kbM2Hd5eLLExCermpj_f8VayQ2oSg_nZ3kQ';
