@@ -1,0 +1,31 @@
+{
+  "statusCode": 404,
+  "headers": {
+    "server": "nginx",
+    "date": "Thu, 10 May 2018 10:38:00 GMT",
+    "content-type": "text/html; charset=UTF-8",
+    "content-length": "63",
+    "connection": "close",
+    "content-encoding": "gzip",
+    "vary": "Accept-Encoding"
+  },
+  "url": "https://api.dronedeploy.com/api/v1/jwt_public_keys",
+  "time": 116,
+  "request": {
+    "method": "GET",
+    "headers": {
+      "Accept": [
+        "*/*"
+      ],
+      "User-Agent": [
+        "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+      ],
+      "Accept-Encoding": [
+        "gzip,deflate"
+      ],
+      "Connection": [
+        "close"
+      ]
+    }
+  }
+}

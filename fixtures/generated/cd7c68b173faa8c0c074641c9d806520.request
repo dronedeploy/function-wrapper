@@ -1,0 +1,19 @@
+{
+  "url": "http://api.dronedeploy.com/api/v1/jwt_public_keys",
+  "method": "GET",
+  "headers": {
+    "Accept": [
+      "*/*"
+    ],
+    "User-Agent": [
+      "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    ],
+    "Accept-Encoding": [
+      "gzip,deflate"
+    ],
+    "Connection": [
+      "close"
+    ]
+  },
+  "body": ""
+}
