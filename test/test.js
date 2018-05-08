@@ -2,6 +2,7 @@ const assert = require('assert');
 const authentication = require('../lib/authentication');
 process.env.VCR_MODE = "playback";
 const sepia = require('sepia');
+sepia.configure({debug: true});
 
 
 describe('authentication', function() {
@@ -95,20 +96,16 @@ describe('authentication', function() {
     "6R7KHmAezhY9lB/UOiLYfo5F3A7zWBjw5OSadLOBP+PAs3MTDyDSowkf2eHs0skp\n" +
     "Nv9fPDAo1fic4xNbplUH3jcCAwEAAQ==\n" +
     "-----END PUBLIC KEY-----"];
-    let oldAppSlug, oldFunctionId;
+    let oldEnv;
     before(function () {
-      oldAppSlug = global.APP_SLUG;
-      oldFunctionId = global.FUNCTION_ID;
+      oldEnv = global.ENV;
     });
     afterEach(function () {
-      global.APP_SLUG = oldAppSlug;
-      global.FUNCTION_ID = oldFunctionId;
+      global.ENV = oldEnv;
     });
 
     it('should return public keys array when invoked', function () {
-      authentication.fetch = function () {
-        return keysResponse;
-      };
+      global.ENV = "test";
       return authentication.getPublicKeys()
         .then(function (result) {
           assert.deepEqual(result, keysResponse);
