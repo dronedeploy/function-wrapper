@@ -34,7 +34,7 @@ let res = {
       send: () => {
 
       }
-    }
+    };
   },
   set: (name, value) => {
     res.headers[name] = value;
