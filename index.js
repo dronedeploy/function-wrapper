@@ -4,14 +4,6 @@ const authentication = require('./lib/authentication');
 const util = require('util');
 
 
-function WrongAudienceError(message) {
-  this.message = message;
-  Error.captureStackTrace(this, WrongAudienceError);
-}
-util.inherits(WrongAudienceError, Error);
-WrongAudienceError.prototype.name = 'WrongAudienceError';
-
-
 module.exports = (config, req, res, cb) => {
   ctx = {};
   config.cors = config.cors || {};  // config that gets passed in is always set by user
@@ -59,7 +51,7 @@ module.exports = (config, req, res, cb) => {
       .then(function (decryptedToken) {
         let validAudience = authentication.verifyAudience(decryptedToken);
         if (!validAudience) {
-          throw new WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
+          throw new authentication.WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
         }
         ctx.token = decryptedToken;
         modules.install(ctx);
