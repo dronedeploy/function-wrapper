@@ -1,0 +1,33 @@
+{
+  "statusCode": 200,
+  "headers": {
+    "server": "nginx",
+    "date": "Tue, 08 May 2018 17:27:34 GMT",
+    "content-type": "application/json",
+    "transfer-encoding": "chunked",
+    "connection": "close",
+    "vary": "Accept-Encoding",
+    "expires": "Tue, 08 May 2018 17:27:33 GMT",
+    "cache-control": "no-cache, no-cache",
+    "content-encoding": "gzip"
+  },
+  "url": "http://api_test.dronedeploy.com/api/v1/jwt_public_keys",
+  "time": 426,
+  "request": {
+    "method": "GET",
+    "headers": {
+      "Accept": [
+        "*/*"
+      ],
+      "User-Agent": [
+        "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+      ],
+      "Accept-Encoding": [
+        "gzip,deflate"
+      ],
+      "Connection": [
+        "close"
+      ]
+    }
+  }
+}
