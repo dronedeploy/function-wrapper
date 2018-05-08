@@ -1,7 +1,6 @@
 const jwt = require('./helpers/jwt');
 const modules = require('./modules');
 const authentication = require('./lib/authentication');
-const util = require('util');
 
 
 module.exports = (config, req, res, cb) => {
