@@ -58,28 +58,20 @@ function mutateRow(ctx) {
   }
 }
 
-
 function upsertRow(ctx) {
   return function (tableId, externalId, data, exclude_fields) {
     const tableCtxId = table(ctx)(tableId);
-    return new Promise((resolve, reject) => {
-      tableCtxId
-        .addRow(externalId, data, exclude_fields)
-        .then((result) => {
-          if (result.errors) {
-            // externalId probably already exists (but could be any other error)
-            throw new Error(result.errors[0]);
-          }
-          resolve(result);
-        }).catch(e => {  // TODO: test this codepath
-          tableCtxId
-            .editRow(externalId, data, exclude_fields)  // attempt to edit preexisting externalId
-            .then(result => resolve(result))
-            .catch(e => {
-              reject(result);
-            });
-        });
-    });
+    return tableCtxId.addRow(externalId, data, exclude_fields)
+      .then((result) => {
+        if (result.errors) {
+          // externalId probably already exists (but could be any other error)
+          throw new Error(result.errors[0]);
+        }
+        return result;
+      })
+      .catch(function () {  // TODO: test this codepath
+        return tableCtxId.editRow(externalId, data, exclude_fields);  // attempt to edit preexisting externalId
+      });
   };
 }
 
