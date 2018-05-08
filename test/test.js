@@ -4,7 +4,6 @@ process.env.VCR_MODE = "playback";
 const sepia = require('sepia');
 
 
-
 describe('authentication', function() {
   const encryptedJwt = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXS1MifQ.eyJhdWQiOlsiZnVuY3Rpb25faWQiLCJhcGkuZHJvbmVkZXBsb3kuY29tIl0sImV4cCI6OTYyNTA0NDA2OSwiaXNzIjoiYXBpLmRyb25lZGVwbG95LmNvbSIsIm9ibyI6InBsdWdpbl9zbHVnIiwib3JnYW5pemF0aW9uX2lkIjoib3JnX2lkIiwic2NvcGUiOlsicGF5bWVudHMiLCJ1c2VyX2luZm9ybWF0aW9uIl0sInN1YiI6IlVzZXI6NTZiMGZkNGQ0NTYxZjUwMDBmMmYxMzFlIn0.ICsSJxeJllbljBhT8YMefrVtN5aD4rpv8nXOYEUqnG2qo14bZtHlFm6KDn2q84o_ea4FFkmlFSeCO6ol-lBOA_hVoaW1f-WeNID152oeS6s1hL_nJWCEzOCjf8eaztoaInS9OxLpY35LbH0I3KUuq1RCT5IDorKUOJfoEA5QoBLS6nlYEts42Sq8KHoUhshndQgtbdS6iUO53aBMB5HFhjnBMtAePadRfQLP7WtRUUq00P8TdnmZhg0e8dFIA5TF_NHsEHfCX9gwnJjhWs9-hVUbAUPgJL8SC0lmrA5w8vqa6cWpPxUYGnC5CtXP2HI1S8QktvWVqWfWJDYbHYbXiS88dTQLOBvxDBd23Dr03McaRgUnynfvFK3XWZIwGiELBdGhqjMp5Vxu2WMxcywBwnGKsIE4umt5H_0meXlcDF8DixKqWlJvn0TMgAMFReJVjW3UQZdFPttPon-0DZ6h0sGIeyJlvkC2farlXVvRthN1MMTUQdwiNErWTqTVfQqtQQiLr5FO8IjgrjpvKcH3EDPB2p5LkjudtuzrImc7sQYyjslrdbHWYbNPDkrtB5Xhk1IOwM2MrFZBRLEE4cHJN2brJCq7VszochZ1Dob2OoyvrkImxq0Py-n5D5238-MeNF4qsoCY99s-SvoyAr1AwBOb_lfmiJQUetQkK-yGlaU";
   const decryptedJwtJson = '{\n' +
@@ -96,28 +95,20 @@ describe('authentication', function() {
     "6R7KHmAezhY9lB/UOiLYfo5F3A7zWBjw5OSadLOBP+PAs3MTDyDSowkf2eHs0skp\n" +
     "Nv9fPDAo1fic4xNbplUH3jcCAwEAAQ==\n" +
     "-----END PUBLIC KEY-----"];
-    let oldAppSlug, oldFunctionId, oldFetch, auth, fetchMock;
+    let oldAppSlug, oldFunctionId;
     before(function () {
       oldAppSlug = global.APP_SLUG;
       oldFunctionId = global.FUNCTION_ID;
-      //oldFetch = authentication.fetch;
-    });
-    beforeEach(function () {
-      //fetchMock = td.replace('node-fetch');
-      //auth = require('../lib/authentication');
     });
     afterEach(function () {
       global.APP_SLUG = oldAppSlug;
       global.FUNCTION_ID = oldFunctionId;
-      //authentication.fetch = oldFetch;
-      //td.reset();
     });
 
     it('should return public keys array when invoked', function () {
       authentication.fetch = function () {
         return keysResponse;
       };
-      //td.when(fetchMock()).thenReturn(keysResponse);
       authentication.getPublicKeys()
         .then(function (result) {
           assert.equal(result, keysResponse);
