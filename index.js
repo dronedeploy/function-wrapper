@@ -5,7 +5,7 @@ const authentication = require('./lib/authentication');
 
 module.exports = (config, req, res, cb) => {
   ctx = {};
-  config.cors = config.cors || {};  // TODO: config that gets passed in is always set by user
+  config.cors = config.cors || {};  // config that gets passed in is always set by user
   // will probably be a config yaml file
 
   // Allow user to add headers here.

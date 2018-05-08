@@ -2,7 +2,7 @@ const util = require('util')
 const bootstrap = require('../index');
 
 let config = {
-  authRequired: false,  // TODO: set to true for real testing
+  authRequired: false,  // set to true for real testing
   mockToken: true,
   mockTokenScopes: [
     'datastore',
