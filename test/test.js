@@ -109,9 +109,9 @@ describe('authentication', function() {
       authentication.fetch = function () {
         return keysResponse;
       };
-      authentication.getPublicKeys()
+      return authentication.getPublicKeys()
         .then(function (result) {
-          assert.equal(result, keysResponse);
+          assert.deepEqual(result, keysResponse);
         });
     });
   });
