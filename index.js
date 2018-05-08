@@ -1,6 +1,15 @@
 const jwt = require('./helpers/jwt');
 const modules = require('./modules');
 const authentication = require('./lib/authentication');
+const util = require('util');
+
+
+function WrongAudienceError(message) {
+  this.message = message;
+  Error.captureStackTrace(this, WrongAudienceError);
+}
+util.inherits(WrongAudienceError, Error);
+WrongAudienceError.prototype.name = 'WrongAudienceError';
 
 
 module.exports = (config, req, res, cb) => {
@@ -48,15 +57,22 @@ module.exports = (config, req, res, cb) => {
     authentication.getPublicKeys()
       .then(decryptTokenWithKeys)
       .then(function (decryptedToken) {
+        let validAudience = authentication.verifyAudience(decryptedToken);
+        if (!validAudience) {
+          throw new WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
+        }
         ctx.token = decryptedToken;
         modules.install(ctx);
         cb(null, ctx);
       })
       .catch(function (e) {
-        // couldn't decrypt token with any of the public keys
+        let message = 'Could not decrypt token with any of the public keys';
+        if (e instanceof WrongAudienceError) {
+          message = e.message;
+        }
         res.status(401).send({
           error: {
-            'message': 'Could not decrypt token with any of the public keys'
+            'message': message
           }
         });
       });
