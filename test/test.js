@@ -98,14 +98,14 @@ describe('authentication', function() {
     "-----END PUBLIC KEY-----"];
     let oldEnv;
     before(function () {
-      oldEnv = global.ENV;
+      oldEnv = global.NODE_ENV;
     });
     afterEach(function () {
-      global.ENV = oldEnv;
+      global.NODE_ENV = oldEnv;
     });
 
     it('should return public keys array when invoked', function () {
-      global.ENV = "test";
+      global.NODE_ENV = "test";
       return authentication.getPublicKeys()
         .then(function (result) {
           assert.deepEqual(result, keysResponse);

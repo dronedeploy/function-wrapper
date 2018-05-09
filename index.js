@@ -34,7 +34,7 @@ module.exports = (config, req, res, cb) => {
   if (config.authRequired) {
     let token;
     try {
-      token = jwt.parse(req);
+      ctx.encryptedToken = token = jwt.parse(req);
     } catch (e) {
       res.status(401).send({
         error: {
@@ -70,11 +70,11 @@ module.exports = (config, req, res, cb) => {
       })
   } else {
     if (config.mockToken) {
-      ctx.jwt_token = 'eyJWhtjwke;wlewewkrw'
+      ctx.encryptedToken = 'eyJWhtjwke;wlewewkrw';
       if (config.mockTokenScopes) {
         ctx.token = {
           scopes: config.mockTokenScopes || []
-        }
+        };
       }
     }
     modules.install(ctx);
