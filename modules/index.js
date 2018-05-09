@@ -31,10 +31,14 @@ exports.install = (ctx) => {
 
   ctx.graphql = graphql(ctx);
 
-  // datastore is dependent on graphql
   if (ctx.token.scopes.indexOf('datastore') !== -1)
     ctx.datastore = datastore(ctx);
 
   if (ctx.token.scopes.indexOf('functions') !== -1)
     ctx.functions = functions(ctx);
-};
+
+
+  // datastore is dependent on graphql
+
+
+}

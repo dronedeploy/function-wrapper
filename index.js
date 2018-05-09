@@ -1,23 +1,20 @@
-const jwt = require('./helpers/jwt');
+const helpers = require('./helpers');
 const modules = require('./modules');
-const authentication = require('./lib/authentication');
-
 
 module.exports = (config, req, res, cb) => {
-  ctx = {};
-  config.cors = config.cors || {};  // config that gets passed in is always set by user
-  // will probably be a config yaml file
+  ctx = {}
+  config.cors = config.cors || {};
 
   // Allow user to add headers here.
   config.cors.headers = config.cors.headers || [];
 
   // Combine user headers with our own defaults
-  corsHeaders = ['Content-Type', 'Authorization'];
+  corsHeaders = ['Content-Type', 'Authorization']
   config.cors.headers.forEach((header) => {
     if (corsHeaders.indexOf(header) === -1) {
       corsHeaders.push(header);
     }
-  });
+  })
 
   // Set CORS up.
   res.set('Access-Control-Allow-Origin', '*');
@@ -35,48 +32,41 @@ module.exports = (config, req, res, cb) => {
   if (config.authRequired) {
     let token;
     try {
-      token = jwt.parse(req);
+      token = helpers.jwt.parse(req)
     } catch (e) {
       res.status(401).send({
         error: {
           'message': 'Could not find user credentials.'
         }
       });
-      return cb(e, ctx);
     }
 
-    const decryptTokenWithKeys = authentication.decryptTokenWithKeys.bind(undefined, token);
-    authentication.getPublicKeys()
-      .then(decryptTokenWithKeys)
-      .then(function (decryptedToken) {
-        let validAudience = authentication.verifyAudience(decryptedToken);
-        if (!validAudience) {
-          throw new authentication.WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
+    let decryptedToken;
+      authentication.getTokenKey((err, key) => {
+        try {
+          decryptedToken = helpers.jwt.decrypt(token, key);
+        } catch (e) {
+          res.satus(401).send({
+            error: {
+              'message': 'Could not verify user credentials.'
+            }
+          });
         }
-        ctx.token = decryptedToken;
-        modules.install(ctx);
-        cb(null, ctx);
       })
-      .catch(function (e) {
-        let message = 'Could not decrypt token with any of the public keys';
-        if (e instanceof authentication.WrongAudienceError) {
-          message = e.message;
-        }
-        res.status(401).send({
-          error: {
-            'message': message
+    } else {
+      if (config.mockToken) {
+        ctx.jwt_token = 'eyJWhtjwke;wlewewkrw'
+        if (config.mockTokenScopes) {
+          ctx.token = {
+            scopes: config.mockTokenScopes || []
           }
-        });
-        cb(e, ctx);
-      })
-      .done();
+        }
+      }
 
-
-  } else {
-    modules.install(ctx);
-    cb(null, ctx);
-  }
-};
+      modules.install(ctx);
+      cb (null, ctx);
+    }
+}
 
 
 

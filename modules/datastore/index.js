@@ -5,7 +5,7 @@ module.exports = (ctx) => {
     upsertRow: upsertRow(ctx),
     table: table(ctx)
   }
-};
+}
 
 /*
  This function gets the public api methods for a table.
@@ -28,41 +28,58 @@ function table(ctx) {
 }
 
 function mutateRow(ctx) {
-  return function (operation) {  // operation could be one of add, edit, delete, etc.
+  return function (operation) {
     return function (tableId, externalId, data, exclude_fields) {
       exclude_fields = exclude_fields || [];
-      const query = getDataMutationQuery(operation, exclude_fields);
-      const variables = getDataMutationVariables(tableId, externalId, data);
+      return new Promise((resolve, reject) => {
+        try {
+          let query = getDataMutationQuery(operation, exclude_fields);
+          let variables = getDataMutationVariables(tableId, externalId, data);
+          ctx.graphql
+                .query(query, variables)
+                .then(result => {
+                  // make sure we convert data back into a javascript object
+                  try {
+                    result.data = JSON.parse(result.data);
+                  } catch (e) {
+                    // do nothing
+                  }
+                  resolve(result);
+                })
+                .catch(e => {
+                  reject(e);
+                })
 
-      return ctx.graphql.query(query, variables)
-        .then(result => {
-          // make sure we convert data back into a javascript object
-          try {
-            result.data = JSON.parse(result.data);
-          } catch (e) {
-            // do nothing
-          }
-          return result;
-        });
-    };
-  };
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }
+  }
 }
+
 
 function upsertRow(ctx) {
   return function (tableId, externalId, data, exclude_fields) {
-    const tableCtxId = table(ctx)(tableId);
-    return tableCtxId.addRow(externalId, data, exclude_fields)
-      .then((result) => {
-        if (result.errors) {
-          // externalId probably already exists (but could be any other error)
-          throw new Error(result.errors[0]);
-        }
-        return result;
-      })
-      .catch(function () {  // TODO: test this codepath
-        return tableCtxId.editRow(externalId, data, exclude_fields);  // attempt to edit preexisting externalId
-      });
-  };
+    return new Promise((resolve, reject) => {
+      table(ctx)(tableId)
+        .addRow(externalId, data, exclude_fields)
+        .then((result) => {
+          if (result.errors) {
+            throw new Error(result.errors[0]);
+          }
+          resolve(result);
+        }).catch(e => {
+          table(ctx)(tableId)
+            .editRow(externalId, data, exclude_fields)
+            .then(result => resolve(result))
+            .catch(e => {
+              reject(result);
+            });
+        })
+    })
+
+  }
 }
 
 function getDataMutationQuery(operation, exclude_fields) {
@@ -78,7 +95,7 @@ function getDataMutationQuery(operation, exclude_fields) {
   }
   let $filtered = (field) => {
     return exclude_fields.indexOf(field) !== -1
-  };
+  }
   let query = `
     mutation ${mutationName}($input: ${inputName}!) {
       ${outputName}(input: $input) {
@@ -91,7 +108,7 @@ function getDataMutationQuery(operation, exclude_fields) {
         }
       }
     }
-  `;
+  `
   return query;
 }
 
