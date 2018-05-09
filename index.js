@@ -42,6 +42,7 @@ module.exports = (config, req, res, cb) => {
           'message': 'Could not find user credentials.'
         }
       });
+      return cb(e, ctx);
     }
 
     const decryptTokenWithKeys = authentication.decryptTokenWithKeys.bind(undefined, token);
@@ -58,7 +59,7 @@ module.exports = (config, req, res, cb) => {
       })
       .catch(function (e) {
         let message = 'Could not decrypt token with any of the public keys';
-        if (e instanceof WrongAudienceError) {
+        if (e instanceof authentication.WrongAudienceError) {
           message = e.message;
         }
         res.status(401).send({
@@ -66,7 +67,9 @@ module.exports = (config, req, res, cb) => {
             'message': message
           }
         });
-      });
+        cb(e, ctx);
+      })
+      .done();
 
 
   } else {

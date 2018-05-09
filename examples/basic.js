@@ -65,5 +65,7 @@ bootstrap(config, req, res, (err, ctx) => {
   // Common headers should have been set automatically.
   // Common requests like OPTIONS should have been handled automatically.
   // lets hack the jwt token to be the test one
+  if (err)
+    return;
   handler(req, res, ctx);
 });
