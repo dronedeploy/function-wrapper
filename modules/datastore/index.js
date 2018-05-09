@@ -31,31 +31,21 @@ function mutateRow(ctx) {
   return function (operation) {  // operation could be one of add, edit, delete, etc.
     return function (tableId, externalId, data, exclude_fields) {
       exclude_fields = exclude_fields || [];
-      return new Promise((resolve, reject) => {
-        try {
-          let query = getDataMutationQuery(operation, exclude_fields);
-          let variables = getDataMutationVariables(tableId, externalId, data);
-          ctx.graphql
-            .query(query, variables)
-            .then(result => {
-              // make sure we convert data back into a javascript object
-              try {
-                result.data = JSON.parse(result.data);
-              } catch (e) {
-                // do nothing
-              }
-              resolve(result);
-            })
-            .catch(e => {
-              reject(e);
-            })
+      const query = getDataMutationQuery(operation, exclude_fields);
+      const variables = getDataMutationVariables(tableId, externalId, data);
 
-        } catch (e) {
-          reject(e);
-        }
-      });
-    }
-  }
+      return ctx.graphql.query(query, variables)
+        .then(result => {
+          // make sure we convert data back into a javascript object
+          try {
+            result.data = JSON.parse(result.data);
+          } catch (e) {
+            // do nothing
+          }
+          return result;
+        });
+    };
+  };
 }
 
 function upsertRow(ctx) {
