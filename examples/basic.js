@@ -53,8 +53,7 @@ function handler(req, res, ctx) {
     })
     .catch(e => {
       console.log(e);
-    })
-    // .done();
+    });
 }
 
 
