@@ -31,7 +31,6 @@ module.exports = (config, req, res, cb) => {
       console.log('OPTIONS');
       res.status(200).send();
   }
-
   if (config.authRequired) {
     let token;
     try {
@@ -69,10 +68,15 @@ module.exports = (config, req, res, cb) => {
         });
         cb(e, ctx);
       })
-      .done();
-
-
   } else {
+    if (config.mockToken) {
+      ctx.jwt_token = 'eyJWhtjwke;wlewewkrw'
+      if (config.mockTokenScopes) {
+        ctx.token = {
+          scopes: config.mockTokenScopes || []
+        }
+      }
+    }
     modules.install(ctx);
     cb(null, ctx);
   }

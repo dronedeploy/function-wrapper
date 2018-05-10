@@ -16,10 +16,6 @@ let testJwt = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJvYm8iOiJwbHVnaW5fc2x1ZyIs
 testJwt = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXS1MifQ.eyJhdWQiOlsiZnVuY3Rpb25faWQiLCJhcGkuZHJvbmVkZXBsb3kuY29tIl0sImV4cCI6OTYyNTA0NDA2OSwiaXNzIjoiYXBpLmRyb25lZGVwbG95LmNvbSIsIm9ibyI6InBsdWdpbl9zbHVnIiwib3JnYW5pemF0aW9uX2lkIjoib3JnX2lkIiwic2NvcGUiOlsicGF5bWVudHMiLCJ1c2VyX2luZm9ybWF0aW9uIiwiZGF0YXN0b3JlIiwiZnVuY3Rpb25zIl0sInN1YiI6IlVzZXI6NTZiMGZkNGQ0NTYxZjUwMDBmMmYxMzFlIn0.RkX6dJ0E0AxSI8QHwtFkKYof8gLxlnTUVnMc3FS_BgU7yMvOGbZ_TjADEHxAMS0xb7XKMXW_l8MJemfXc7i3sGfWcS6mVppz-sJuOgaibcxmwvTPiKa6Y7d-pwICOQkkRsYOPnJdEjLJr5C8yJyB5rv4ss_cTbCnSgOUtUynhIXeP0iHmhhjdZGzYTGaSpJMIP55V70Yo2reb4NTY5Did31g99ZsyFElyvIRpFxmwjAMA-sDTdvvk9-onhKHfBuO8OWiRstuweFdxGcDNVw_PQH7hduGc71Higa4rda8DA8-XF0XA7r9_zfJtgKrinIF495vEvAmpv6TncE8ZOCUvF6Yv4oo20bsZktvEf1puR8LpZdAbaXT5xLo4UEJAWxFCso_pOOi0xVOZID60dZXjBCzTTUbq0_MBTuiscOHxag7yzxwas4UsBiiK1KWSmUQDUDteN6eC7elCAGMGomz1P74JlnrdIxbbCmjPYKfvuPlKR3nqbftCXx3syP1DPQ2AYawIqD3cB5GhqW4PmjWCvkiLjZzQ0hIKr0_ds9zF-B9U2y8gdJMSZviITifNYltszxA7MWmysSsauigks39l1_T_ux28GLZcCV4RhM9e2ARIkaVT2MESVL4n0jHM52bLfNNrKkqPXB21838plzDYfkOqgrQwyxVXf0BtRHfBJk";
 testJwt = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXS1MifQ.eyJhdWQiOlsiZnVuY3Rpb25faWQiLCJhcGkuZHJvbmVkZXBsb3kuY29tIl0sImV4cCI6OTYyNTA0NDA2OSwiaXNzIjoiYXBpLmRyb25lZGVwbG95LmNvbSIsIm9ibyI6InBsdWdpbl9zbHVnIiwib3JnYW5pemF0aW9uX2lkIjoib3JnX2lkIiwic2NvcGUiOlsicGF5bWVudHMiLCJ1c2VyX2luZm9ybWF0aW9uIl0sInN1YiI6IlVzZXI6NTZiMGZkNGQ0NTYxZjUwMDBmMmYxMzFlIn0.ICsSJxeJllbljBhT8YMefrVtN5aD4rpv8nXOYEUqnG2qo14bZtHlFm6KDn2q84o_ea4FFkmlFSeCO6ol-lBOA_hVoaW1f-WeNID152oeS6s1hL_nJWCEzOCjf8eaztoaInS9OxLpY35LbH0I3KUuq1RCT5IDorKUOJfoEA5QoBLS6nlYEts42Sq8KHoUhshndQgtbdS6iUO53aBMB5HFhjnBMtAePadRfQLP7WtRUUq00P8TdnmZhg0e8dFIA5TF_NHsEHfCX9gwnJjhWs9-hVUbAUPgJL8SC0lmrA5w8vqa6cWpPxUYGnC5CtXP2HI1S8QktvWVqWfWJDYbHYbXiS88dTQLOBvxDBd23Dr03McaRgUnynfvFK3XWZIwGiELBdGhqjMp5Vxu2WMxcywBwnGKsIE4umt5H_0meXlcDF8DixKqWlJvn0TMgAMFReJVjW3UQZdFPttPon-0DZ6h0sGIeyJlvkC2farlXVvRthN1MMTUQdwiNErWTqTVfQqtQQiLr5FO8IjgrjpvKcH3EDPB2p5LkjudtuzrImc7sQYyjslrdbHWYbNPDkrtB5Xhk1IOwM2MrFZBRLEE4cHJN2brJCq7VszochZ1Dob2OoyvrkImxq0Py-n5D5238-MeNF4qsoCY99s-SvoyAr1AwBOb_lfmiJQUetQkK-yGlaU";
 
-config = {
-  authRequired: true,
-};
-
 let req = {
   headers: {
     'DummyHeader': 'imadummy'
@@ -42,6 +38,7 @@ let res = {
 };
 
 function handler(req, res, ctx) {
+  ctx.jwt_token = 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJlbnZpcm9ubWVudCI6InRlc3QiLCJ1c2VybmFtZSI6Im1oZXJuYW5kZXpAZHJvbmVkZXBsb3kuY29tIiwiZXhwIjoxNTI3MDEyNTcyfQ.4s8O7e1ZA9CBAgBwC2Hn9ZXLVZA0hz-ZJFglvvW6tcDOiq9eXA6kbM2Hd5eLLExCermpj_f8VayQ2oSg_nZ3kQ';
   let users = ctx
     .datastore
     .table('Table:5ada2d8f27b7b90001b9c40a');
@@ -57,7 +54,7 @@ function handler(req, res, ctx) {
     .catch(e => {
       console.log(e);
     })
-    .done();
+    // .done();
 }
 
 
@@ -65,7 +62,10 @@ bootstrap(config, req, res, (err, ctx) => {
   // Common headers should have been set automatically.
   // Common requests like OPTIONS should have been handled automatically.
   // lets hack the jwt token to be the test one
-  if (err)
+  if (err) {
+    console.error(err, err.stack);
+    console.warn('An error occurred during the bootstrapping process. A default response has been sent and code paths have been stopped.');
     return;
+  }
   handler(req, res, ctx);
 });
