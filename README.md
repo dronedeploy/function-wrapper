@@ -94,11 +94,11 @@ function handler(req, res, ctx) {
   // this is for mocking token.
   ctx.encryptedToken = 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJlbnZpcm9ubWVudCI6InRlc3QiLCJ1c2VybmFtZSI6Im1oZXJuYW5kZXpAZHJvbmVkZXBsb3kuY29tIiwiZXhwIjoxNTI3MDEyNTcyfQ.4s8O7e1ZA9CBAgBwC2Hn9ZXLVZA0hz-ZJFglvvW6tcDOiq9eXA6kbM2Hd5eLLExCermpj_f8VayQ2oSg_nZ3kQ';
 
+  // Get the users tables
   let users = ctx
     .datastore
     .table('Table:5ada2d8f27b7b90001b9c40a');
 
-  // Get the users tables
   users
     // .addRow('mhernandez+test@dronedeploy.com', {name: 'Michaxel Hernandez'})
     // .editRow('mhernandez+test@dronedeploy.com', {name: 'Michaxel Hernandez'})
