@@ -34,7 +34,6 @@ module.exports = (config, req, res, cb) => {
   // IF Method is OPTIONS we want to return after setting headers
   // @TODO may want to put this behind a disable flag
   if (req.method == 'OPTIONS') {
-      console.log('OPTIONS');
       res.status(200).send();
   }
   // if (config.authRequired) {

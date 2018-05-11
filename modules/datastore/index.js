@@ -55,7 +55,6 @@ function mutateRow(ctx) {
               return retVal;
             }
           } catch (e) {
-            console.error(e)
             // do nothing
           }
           if (result.errors) {
@@ -64,7 +63,6 @@ function mutateRow(ctx) {
                 errors: result.errors
               }
           }
-
         });
     };
   };
