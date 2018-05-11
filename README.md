@@ -57,12 +57,19 @@ in the config object. This is subject to change at any time.
 
 Api Methods
 ================
+
 table(tableId)
+
   Methods on the table object
+
     addRow(externalKey, data)
+
     editRow(externalKey, data)
+
     upsertRow(externalKey, data) // subject to change
+
     Example Response for add, edit, upsert
+
     ```
     { ok: true,
       data:
@@ -74,11 +81,15 @@ table(tableId)
        }
      }
     ```
+
     getRow(externalKey)
+
     Example Response for get
+
     ```
     { ok: true, data: { name: 'Michael Hernandez' } }
     ```
+
 Example handler showing the aformentioned methods in use, also see file `examples/basic.js`
 ```
 function handler(req, res, ctx) {
