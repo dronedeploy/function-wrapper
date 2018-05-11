@@ -4,6 +4,11 @@ const authentication = require('./lib/authentication');
 
 
 module.exports = (config, req, res, cb) => {
+  if (config.authRequired !== false) {
+    // test for strict equality disable of auth.
+    config.authRequired = true;
+  }
+
   let ctx = {};
 
   if (config.mockToken) {
