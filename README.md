@@ -60,37 +60,35 @@ Api Methods
 
 table(tableId)
 
-  Methods on the table object
+Methods on the table object
 
-    addRow(externalKey, data)
+- addRow(externalKey, data)
+- editRow(externalKey, data)
+- upsertRow(externalKey, data) // subject to change
 
-    editRow(externalKey, data)
+Example Response for add, edit, upsert
 
-    upsertRow(externalKey, data) // subject to change
+```
+{ ok: true,
+  data:
+   { id: 'TableData:5ae711f72852b900016b0895',
+     application: { id: 'Application:lonvecnbfyvovfqsvbxz' },
+     data: { name: 'Michael Hernandez' },
+     externalKey: 'mhernandez+test@dronedeploy.com-user-information',
+     table: { id: 'Table:5ada2d8f27b7b90001b9c40a' }
+   }
+ }
+```
+- getRow(externalKey)
 
-    Example Response for add, edit, upsert
+Example Response for get
 
-    ```
-    { ok: true,
-      data:
-       { id: 'TableData:5ae711f72852b900016b0895',
-         application: { id: 'Application:lonvecnbfyvovfqsvbxz' },
-         data: { name: 'Michael Hernandez' },
-         externalKey: 'mhernandez+test@dronedeploy.com-user-information',
-         table: { id: 'Table:5ada2d8f27b7b90001b9c40a' }
-       }
-     }
-    ```
-
-    getRow(externalKey)
-
-    Example Response for get
-
-    ```
-    { ok: true, data: { name: 'Michael Hernandez' } }
-    ```
+```
+{ ok: true, data: { name: 'Michael Hernandez' } }
+```
 
 Example handler showing the aformentioned methods in use, also see file `examples/basic.js`
+
 ```
 function handler(req, res, ctx) {
   // this is for mocking token.
@@ -126,6 +124,7 @@ function handler(req, res, ctx) {
 Configuration
 ================
 example configuration object
+
 ```
 // in the index.js
 config = require('./config.json');
