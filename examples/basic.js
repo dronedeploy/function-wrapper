@@ -50,7 +50,6 @@ function handler(req, res, ctx) {
       console.log(util.inspect(result, {depth: 20, colors: true}));
     })
     .then(() => {
-      console.log('fetching datum from datastore');
       users
         .getRowByExternalId('mhernandez+test@dronedeploy.com')
         .then((result) => {
