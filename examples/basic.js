@@ -4,10 +4,6 @@ const bootstrap = require('../index');
 let config = {
   authRequired: false,  // set to true for real testing
   mockToken: true,
-  mockTokenScopes: [
-    'datastore',
-    'functions'
-  ]
 };
 
 let testJwt = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJvYm8iOiJwbHVnaW5fc2x1ZyIsImF1ZCI6WyJmdW5jdGlvbl9pZCIsImFwaS5kcm9uZWRlcGxveS5jb20iXSwiaXNzIjoiYXBpLmRyb25lZGVwbG95LmNvbSIsIm9yZ2FuaXphdGlvbl9pZCI6Im9yZ19pZCIsImV4cCI6MTYyNTA0NDA2OSwic2NvcGUiOlsicGF5bWVudHMiLCJ1c2VyX2luZm9ybWF0aW9uIl0sInN1YiI6IlVzZXI6NTZiMGZkNGQ0NTYxZjUwMDBmMmYxMzFlIn0.OIrad7oVWaZmQ5YgZ2bmq961w9-3vaf_6vQabsI6E_1QGwxBdzo6tuesQo0kZe3QxyOUskoGggAFWW337zNAebcYZMxka6MwgElDIu7tdQ-5S6991vRN37KsReVlelqY78GMG_ohVb1iaXee0jplFNy_1S_Y3fx0ZvVdtVE99zdXukCfw4-tRQmtJq3LDi2PsifixeAoBatzgsoEefHYpdCEek-RD9CRWmeNDGz9Dd5May0_oruCFrxk9yagwdw6_TdhjY6Ti6aYZQGVF4l3xrZl8uvmxZZDZYCFB3aSeee8vlYHeecrLZTPv7HFRKhI2x-CIrxNbBs3L8EoBc2xp9e4MKEWiv-UyXtLzdw1OgGpwH3SdqBmj4-COYT5uFgV6bWVz-zYTHLcGGn1-BAOPjBMCfeCfKXjcEzjoCgIsULhV3NdAOdPu_GSCppyRd_O3whGTHvLihgxd8LoeZ5FdQlBvjbQMQ-6yiw92juE8LJSFOnQ9995lOeTfyN2Hzv0ovw4QMnTnWgXCb3YTmmmbTkpidSfGCXtgsiemwAecTD9tF8VMU-lEIH-5v0mOZWz-6a2LKl8hkSdjm2i8l3Dz1oeoZrW_sQkFatLeSGUZb2l0VeVvpN66oTfZB8_n78APEjeqfOrEsaxrBtigaDXbGq8OvW2-poPJb2Z4Q-tsDE";
@@ -38,7 +34,9 @@ let res = {
 };
 
 function handler(req, res, ctx) {
-  ctx.jwt_token = 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJlbnZpcm9ubWVudCI6InRlc3QiLCJ1c2VybmFtZSI6Im1oZXJuYW5kZXpAZHJvbmVkZXBsb3kuY29tIiwiZXhwIjoxNTI3MDEyNTcyfQ.4s8O7e1ZA9CBAgBwC2Hn9ZXLVZA0hz-ZJFglvvW6tcDOiq9eXA6kbM2Hd5eLLExCermpj_f8VayQ2oSg_nZ3kQ';
+  // this is for mocking token.
+  ctx.encryptedToken = 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJlbnZpcm9ubWVudCI6InRlc3QiLCJ1c2VybmFtZSI6Im1oZXJuYW5kZXpAZHJvbmVkZXBsb3kuY29tIiwiZXhwIjoxNTI3MDEyNTcyfQ.4s8O7e1ZA9CBAgBwC2Hn9ZXLVZA0hz-ZJFglvvW6tcDOiq9eXA6kbM2Hd5eLLExCermpj_f8VayQ2oSg_nZ3kQ';
+
   let users = ctx
     .datastore
     .table('Table:5ada2d8f27b7b90001b9c40a');
@@ -50,6 +48,15 @@ function handler(req, res, ctx) {
     .upsertRow('mhernandez+test@dronedeploy.com', {name: 'Michaxel Hernandez'})
     .then(result => {
       console.log(util.inspect(result, {depth: 20, colors: true}));
+    })
+    .then(() => {
+      console.log('fetching datum from datastore');
+      users
+        .getRowByExternalId('mhernandez+test@dronedeploy.com')
+        .then((result) => {
+          console.log(util.inspect(result, {depth: 20, colors: true}));
+        })
+
     })
     .catch(e => {
       console.log(e);

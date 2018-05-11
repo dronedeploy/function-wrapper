@@ -23,6 +23,7 @@ function table(ctx) {
       addRow: mutateRow(ctx)('add').bind(Object.create(null), tableId),
       editRow: mutateRow(ctx)('edit').bind(Object.create(null), tableId),
       upsertRow: upsertRow(ctx).bind(Object.create(null), tableId),
+      getRowByExternalId: getDatum(ctx).bind(Object.create(null), tableId),
     }
   }
 }
@@ -31,18 +32,39 @@ function mutateRow(ctx) {
   return function (operation) {  // operation could be one of add, edit, delete, etc.
     return function (tableId, externalId, data, exclude_fields) {
       exclude_fields = exclude_fields || [];
-      const query = getDataMutationQuery(operation, exclude_fields);
-      const variables = getDataMutationVariables(tableId, externalId, data);
+      const query = createDataMutationQuery(operation, exclude_fields);
+      const variables = createDataMutationVariables(tableId, externalId, data);
 
       return ctx.graphql.query(query, variables)
         .then(result => {
-          // make sure we convert data back into a javascript object
+          // we should convert data back into a javascript object
           try {
-            result.data = JSON.parse(result.data);
+            if (result.data) {
+              let key;
+              if ('createTableData' in result.data) {
+                key = 'createTableData';
+              } else {
+                key = 'editTableData';
+              }
+
+              retVal = {
+                ok: true,
+                data: result.data[key].tableData
+              }
+              retVal.data.data = JSON.parse(retVal.data.data);
+              return retVal;
+            }
           } catch (e) {
+            console.error(e)
             // do nothing
           }
-          return result;
+          if (result.errors) {
+              return {
+                ok: false,
+                errors: result.errors
+              }
+          }
+
         });
     };
   };
@@ -65,7 +87,7 @@ function upsertRow(ctx) {
   };
 }
 
-function getDataMutationQuery(operation, exclude_fields) {
+function createDataMutationQuery(operation, exclude_fields) {
   let mutationName, inputName, outputName;
   if (operation === 'add') {
     mutationName = 'CreateTableData';
@@ -95,12 +117,60 @@ function getDataMutationQuery(operation, exclude_fields) {
   return query;
 }
 
-function getDataMutationVariables(tableId, externalId, data) {
+function createDataMutationVariables(tableId, externalId, data) {
   return {
     input: {
       externalId,
       tableId,
       data: 'string' !== typeof(data) ? JSON.stringify(data) : data
     }
+  }
+}
+
+
+function getDatum(ctx) {
+  return function (table_id, externalKey) {
+    const query = createGetTableDatumQuery();
+    const variables = createGetTableDatumVariables(table_id, externalKey)
+    return ctx.graphql.query(query, variables)
+      .then(result => {
+        // make sure we convert data back into a javascript object
+        try {
+          if (result.data) {
+            return {
+              ok: true,
+              data: JSON.parse(result.data.node.tableDatum.data)
+            }
+          }
+
+        } catch (e) {
+          // do nothing
+        }
+        return {
+          ok: false,
+          errors: result.errors
+        }
+      });
+  }
+}
+
+
+function createGetTableDatumQuery() {
+  return `
+    query($table_id:ID!, $externalKey:String!){
+      node(id:$table_id){
+        ... on Table{
+          tableDatum(externalKey: $externalKey){
+            data
+          }
+        }
+      }
+    }`
+}
+
+function createGetTableDatumVariables(table_id, externalKey) {
+  return {
+    table_id,
+    externalKey
   }
 }

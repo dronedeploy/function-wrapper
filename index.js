@@ -4,7 +4,13 @@ const authentication = require('./lib/authentication');
 
 
 module.exports = (config, req, res, cb) => {
-  ctx = {};
+  let ctx = {};
+
+  if (config.mockToken) {
+    ctx.jwt_token = '__change_in_handler__'
+    ctx.token = {}
+  }
+
   config.cors = config.cors || {};  // config that gets passed in is always set by user
   // will probably be a config yaml file
 
@@ -31,11 +37,12 @@ module.exports = (config, req, res, cb) => {
       console.log('OPTIONS');
       res.status(200).send();
   }
-  if (config.authRequired) {
-    let token;
-    try {
-      ctx.encryptedToken = token = jwt.parse(req);
-    } catch (e) {
+  // if (config.authRequired) {
+  let token;
+  try {
+    token = jwt.parse(req);
+  } catch (e) {
+    if (config.authRequired) {
       res.status(401).send({
         error: {
           'message': 'Could not find user credentials.'
@@ -43,71 +50,36 @@ module.exports = (config, req, res, cb) => {
       });
       return cb(e, ctx);
     }
+    modules.install(ctx);
+    return cb(null, ctx);
+  }
 
-    const decryptTokenWithKeys = authentication.decryptTokenWithKeys.bind(undefined, token);
-    authentication.getPublicKeys()
-      .then(decryptTokenWithKeys)
-      .then(function (decryptedToken) {
-        let validAudience = authentication.verifyAudience(decryptedToken);
-        if (!validAudience) {
-          throw new authentication.WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
-        }
-        ctx.token = decryptedToken;
-        modules.install(ctx);
-        cb(null, ctx);
-      })
-      .catch(function (e) {
-        let message = 'Could not decrypt token with any of the public keys';
-        if (e instanceof authentication.WrongAudienceError) {
-          message = e.message;
-        }
+  const decryptTokenWithKeys = authentication.decryptTokenWithKeys.bind(undefined, token);
+  authentication.getPublicKeys()
+    .then(decryptTokenWithKeys)
+    .then(function (decryptedToken) {
+      let validAudience = authentication.verifyAudience(decryptedToken);
+      if (!validAudience) {
+        throw new authentication.WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
+      }
+      ctx.token = decryptedToken;
+      modules.install(ctx);
+      cb(null, ctx);
+    })
+    .catch(function (e) {
+      let message = 'Could not decrypt token with any of the public keys';
+      if (e instanceof authentication.WrongAudienceError) {
+        message = e.message;
+      }
+      if (config.authRequired) {
         res.status(401).send({
           error: {
             'message': message
           }
         });
-        cb(e, ctx);
-      })
-  } else {
-    if (config.mockToken) {
-      ctx.encryptedToken = 'eyJWhtjwke;wlewewkrw';
-      if (config.mockTokenScopes) {
-        ctx.token = {
-          scopes: config.mockTokenScopes || []
-        };
+        return cb(e, ctx);
       }
-    }
-    modules.install(ctx);
-    cb(null, ctx);
-  }
+      modules.install(ctx);
+      return cb(null, ctx);
+    });
 };
-
-
-
-// mock stuff
-
-/**
- * ENTRY POINT FOR DRONEDEPLOY
- *
- * @param {!Object} req Cloud Function request context.
- * @param {!Object} res Cloud Function response context.
- */
-//
-// const drondeployFunctionsApi = require('dronedeploy-functions-api');
-// const handler = require('./handler');
-//
-// // Default Function called by google
-// exports.dronedeploy = (req, res) => {
-//   // load config
-//   dronedeployFunctionApi.bootstrap(config, res, res, (err, ctx) => {
-//     handler(req, res, ctx);
-//   });
-// };
-
-// // handler
-//
-// module.exports = (req, res, context) {
-//   if ('getUser' in parts) {
-//     context.datastore.query(context.datastore.userquery, {username: 'mhughes@dronedeploy.com'})
-//   }
-// }
