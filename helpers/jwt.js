@@ -20,9 +20,10 @@ exports.decrypt = function (token, key) {
 * if neither is found, throw error
 */
 exports.parse = function (req) {
-  const authHeader = req.headers && req.headers.Authorization;
-  const query = querystring.parse(req.query);
-  const authQuery = query.jwt_token;
+  // NodeJS applies lowercase to all incoming request headers, but let's leave the 'A' case
+  // in just in case - won't hurt anything
+  const authHeader = req.headers && (req.headers.Authorization || req.headers.authorization);
+  const authQuery = req.query.jwt_token;
 
   if (authHeader)
     return authHeader.split('Bearer ')[1];
