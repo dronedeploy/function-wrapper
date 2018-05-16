@@ -12,7 +12,7 @@ module.exports = (config, req, res, cb) => {
   let ctx = {};
 
   if (config.mockToken) {
-    ctx.jwt_token = '__change_in_handler__'
+    ctx.encryptedToken = '__change_in_handler__'
     ctx.token = {}
   }
 
