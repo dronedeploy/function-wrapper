@@ -1,4 +1,5 @@
 const request = require('request');
+const constants = require('../../helpers/constants');
 
 module.exports = (ctx) => {
   return {
@@ -8,9 +9,8 @@ module.exports = (ctx) => {
 
 function _request(ctx) {
   return function (params, cb) {
-    const env = config.env || global.NODE_ENV || "prod";  // default to prod
-    const envUrlPart = env === "prod" ? "" : "_" + env;
-    params.uri = `https://api${envUrlPart}.dronedeploy.com/graphql`;
+    const baseUrl = config.apiUrl || constants.BASE_PROD_API_URL;
+    params.uri = `${baseUrl}/graphql`;
     params.json = true;
     params.method = 'POST';
     params.headers = params.headers || {};
