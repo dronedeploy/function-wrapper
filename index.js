@@ -41,7 +41,7 @@ module.exports = (config, req, res, cb) => {
   if (req.method == 'OPTIONS') {
       res.status(200).send();
   }
-  // if (config.authRequired) {
+
   let token;
   try {
     token = jwt.parse(req);
@@ -54,12 +54,12 @@ module.exports = (config, req, res, cb) => {
       });
       return cb(e, ctx);
     }
-    modules.install(ctx, config);
+    modules.install(ctx);
     return cb(null, ctx);
   }
 
   const decryptTokenWithKeys = authentication.decryptTokenWithKeys.bind(undefined, token);
-  authentication.getPublicKeys(config)
+  authentication.getPublicKeys()
     .then(decryptTokenWithKeys)
     .then(function (decryptedToken) {
       let validAudience = authentication.verifyAudience(decryptedToken);
@@ -68,7 +68,7 @@ module.exports = (config, req, res, cb) => {
       }
       ctx.originalToken = token;
       ctx.token = decryptedToken;
-      modules.install(ctx, config);
+      modules.install(ctx);
       cb(null, ctx);
     })
     .catch(function (e) {
@@ -84,7 +84,7 @@ module.exports = (config, req, res, cb) => {
         });
         return cb(e, ctx);
       }
-      modules.install(ctx, config);
+      modules.install(ctx);
       return cb(null, ctx);
     });
 };

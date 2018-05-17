@@ -3,7 +3,7 @@ const datastore = require('./datastore');
 const functions = require('./functions');
 
 
-exports.install = (ctx, config) => {
+exports.install = (ctx) => {
   // Public API that dont require Authorization or Authentication
 
 
@@ -29,7 +29,7 @@ exports.install = (ctx, config) => {
     return ctx;
   }
 
-  ctx.graphql = graphql(ctx, config);
+  ctx.graphql = graphql(ctx);
   ctx.datastore = datastore(ctx);
   ctx.functions = functions(ctx);
 };
