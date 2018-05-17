@@ -8,7 +8,9 @@ module.exports = (ctx) => {
 
 function _request(ctx) {
   return function (params, cb) {
-    params.uri = 'https://api_test.dronedeploy.com/graphql';
+    const env = config.env || global.NODE_ENV || "prod";  // default to prod
+    const envUrlPart = env === "prod" ? "" : "_" + env;
+    params.uri = `https://api${envUrlPart}.dronedeploy.com/graphql`;
     params.json = true;
     params.method = 'POST';
     params.headers = params.headers || {};

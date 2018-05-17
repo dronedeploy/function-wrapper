@@ -54,12 +54,12 @@ module.exports = (config, req, res, cb) => {
       });
       return cb(e, ctx);
     }
-    modules.install(ctx);
+    modules.install(ctx, config);
     return cb(null, ctx);
   }
 
   const decryptTokenWithKeys = authentication.decryptTokenWithKeys.bind(undefined, token);
-  authentication.getPublicKeys()
+  authentication.getPublicKeys(config)
     .then(decryptTokenWithKeys)
     .then(function (decryptedToken) {
       let validAudience = authentication.verifyAudience(decryptedToken);
@@ -67,7 +67,7 @@ module.exports = (config, req, res, cb) => {
         throw new authentication.WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
       }
       ctx.token = decryptedToken;
-      modules.install(ctx);
+      modules.install(ctx, config);
       cb(null, ctx);
     })
     .catch(function (e) {
@@ -83,7 +83,7 @@ module.exports = (config, req, res, cb) => {
         });
         return cb(e, ctx);
       }
-      modules.install(ctx);
+      modules.install(ctx, config);
       return cb(null, ctx);
     });
 };
