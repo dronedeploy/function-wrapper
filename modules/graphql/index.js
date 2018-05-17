@@ -1,5 +1,5 @@
 const request = require('request');
-const constants = require('../../helpers/constants');
+const api = require('../../helpers/api');
 
 module.exports = (ctx) => {
   return {
@@ -9,7 +9,7 @@ module.exports = (ctx) => {
 
 function _request(ctx) {
   return function (params, cb) {
-    const baseUrl = config.apiUrl || constants.BASE_PROD_API_URL;
+    const baseUrl = api.getBaseUrl();
     params.uri = `${baseUrl}/graphql`;
     params.json = true;
     params.method = 'POST';
