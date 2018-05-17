@@ -66,6 +66,7 @@ module.exports = (config, req, res, cb) => {
       if (!validAudience) {
         throw new authentication.WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
       }
+      ctx.originalToken = token;
       ctx.token = decryptedToken;
       modules.install(ctx, config);
       cb(null, ctx);
