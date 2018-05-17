@@ -41,7 +41,7 @@ module.exports = (config, req, res, cb) => {
   if (req.method == 'OPTIONS') {
       res.status(200).send();
   }
-  // if (config.authRequired) {
+
   let token;
   try {
     token = jwt.parse(req);
@@ -66,6 +66,7 @@ module.exports = (config, req, res, cb) => {
       if (!validAudience) {
         throw new authentication.WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
       }
+      ctx.originalToken = token;
       ctx.token = decryptedToken;
       modules.install(ctx);
       cb(null, ctx);

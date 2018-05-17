@@ -1,4 +1,5 @@
 const request = require('request');
+const api = require('../../helpers/api');
 
 module.exports = (ctx) => {
   return {
@@ -8,7 +9,8 @@ module.exports = (ctx) => {
 
 function _request(ctx) {
   return function (params, cb) {
-    params.uri = 'https://api_test.dronedeploy.com/graphql';
+    const baseUrl = api.getBaseUrl();
+    params.uri = `${baseUrl}/graphql`;
     params.json = true;
     params.method = 'POST';
     params.headers = params.headers || {};
