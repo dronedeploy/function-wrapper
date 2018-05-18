@@ -1,6 +1,6 @@
 {
   "name": "dronedeploy-functions-api",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Public GraphQL API and Wrapper for Dronedeploy Functions",
   "main": "index.js",
   "scripts": {

@@ -22,3 +22,11 @@ Release 1.0.2
   - encryptedToken changed to originalToken
     - This will break any mock token code until you change this reference.
     - Reference README.md for change.
+
+Release 1.0.3
+- Known Issues
+  - None Currently ( Report any via GH issues )
+- Changes
+  - Dependency versions have been changed to be more restrictive.
+  - Removed production dependency `express`
+  - Updated package-lock.json as well.
