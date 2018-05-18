@@ -50,7 +50,7 @@ module.exports = (req, res, ctx) => {
 }
 ```
 
-Temporarily for testing purposes you can override the `ctx.encryptedToken` here if you set `mockToken: true `
+Temporarily for testing purposes you can override the `ctx.originalToken` here if you set `mockToken: true `
 and `authRequired: false`
 in the config object. This is subject to change at any time.
 
@@ -92,7 +92,7 @@ Example handler showing the aformentioned methods in use, also see file `example
 ```
 function handler(req, res, ctx) {
   // this is for mocking token.
-  ctx.encryptedToken = process.argv[2] // or switch this out for yours.;
+  ctx.originalToken = process.argv[2] // or switch this out for yours.;
 
   // Get the users tables
   let users = ctx

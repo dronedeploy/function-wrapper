@@ -28,7 +28,7 @@ let res = {
 
 function handler(req, res, ctx) {
   // this is for mocking token.
-  ctx.encryptedToken = process.argv[2];
+  ctx.originalToken = process.argv[2];
 
   let users = ctx
     .datastore

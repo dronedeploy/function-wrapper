@@ -14,7 +14,7 @@ function _request(ctx) {
     params.json = true;
     params.method = 'POST';
     params.headers = params.headers || {};
-    params.headers['Authorization'] = 'Bearer ' + ctx.encryptedToken;
+    params.headers['Authorization'] = 'Bearer ' + ctx.originalToken;
     request(params, (err, res, body) => {
       cb(err, body);
     });
