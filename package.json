@@ -9,11 +9,10 @@
   "author": "",
   "license": "MIT License",
   "dependencies": {
-    "express": "^4.16.3",
-    "jsonwebtoken": "^8.2.1",
-    "node-fetch": "^2.1.2",
-    "pem-jwk": "^1.5.1",
-    "request": "^2.85.0"
+    "jsonwebtoken": "~8.2.1",
+    "node-fetch": "2.1.2",
+    "pem-jwk": "~1.5.1",
+    "request": "2.85.0"
   },
   "devDependencies": {
     "express": "^4.16.3",
