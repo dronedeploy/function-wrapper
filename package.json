@@ -1,13 +1,13 @@
 {
   "name": "dronedeploy-functions-api",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "Public GraphQL API and Wrapper for Dronedeploy Functions",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT License",
   "dependencies": {
     "express": "^4.16.3",
     "jsonwebtoken": "^8.2.1",
