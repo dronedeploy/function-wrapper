@@ -30,3 +30,12 @@ Release 1.0.3
   - Dependency versions have been changed to be more restrictive.
   - Removed production dependency `express`
   - Updated package-lock.json as well.
+
+Release 1.1.0
+- Known Issues
+  - None Currently ( Report any via GH issues )
+- Changes
+  - New Method ctx.as(token) allows the ability to switch context to a different user, for instance the user whom owns the plugin. Provided you have the token for that user.
+  - ctx.as (for owner users) also exposes a new ctx.datastore method. `ctx.datastore.ensure`.
+  This method ensures that a table is created and its columns are created.
+  
