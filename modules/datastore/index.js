@@ -177,14 +177,7 @@ const getColumnsToCreate = (ctx, appSlug, tableId, tableName, columnDefinitions)
   return ctx.graphql.query(createFindTableQuery(), createFindTableQueryVariables(tableName, appSlug))
     .then((result) => {
       var columnsResult = result.data.node.table.columns;
-      switch (columnsResult.length) {
-        case 0:
-          return columnDefinitions;
-        case 3:
-          return [];
-        default:
-          return getMissingColumns(columnsResult, columnDefinitions);
-      }
+      return getMissingColumns(columnsResult, columnDefinitions);
     })
 };
 
