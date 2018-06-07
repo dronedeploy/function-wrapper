@@ -9,7 +9,7 @@ module.exports = (config, req, res, cb) => {
     config.authRequired = true;
   }
 
-  let ctx = {};
+  let ctx = req.ctx = {};
 
   if (config.mockToken) {
     ctx.originalToken = '__change_in_handler__'

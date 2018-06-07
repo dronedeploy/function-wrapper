@@ -6,7 +6,14 @@ const functions = require('./functions');
 exports.install = (ctx) => {
   // Public API that dont require Authorization or Authentication
 
-
+  ctx.as = (jwtToken, isOwner) => {
+    asCtx = Object.assign({}, ctx);
+    asCtx.originalToken = jwtToken;
+    asCtx.token = {}
+    asCtx.isOwner = isOwner;
+    exports.install(asCtx);
+    return asCtx;
+  }
   // Set up proxy functions for private API's
   ctx.datastore = new Proxy(Object.create(null), {
     get: (receiver, name) => {
