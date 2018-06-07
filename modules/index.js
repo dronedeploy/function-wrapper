@@ -10,7 +10,7 @@ exports.install = (ctx) => {
     asCtx = Object.assign({}, ctx);
     asCtx.originalToken = jwtToken;
     asCtx.token = {}
-    asCtx.isAdmin = true;
+    asCtx.isAdmin = isAdmin;
     exports.install(asCtx);
     return asCtx;
   }

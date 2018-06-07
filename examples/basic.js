@@ -51,7 +51,7 @@ function handler(req, res, ctx) {
   // this is for mocking token.
   ctx.originalToken = process.argv[2];
   return ctx
-    .as(ownerJWT)
+    .as(ownerJWT, true)
     .datastore
       .ensure('zqyjaheaxvszfgrtdiep', 'new_table_1', 'mydescription', columnDefinitions)
       .then(findTableByName(ctx, 'new_table_1', 'zqyjaheaxvszfgrtdiep'))
