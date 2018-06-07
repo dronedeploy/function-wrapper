@@ -6,7 +6,7 @@ module.exports = (ctx) => {
     table: table(ctx),
     findTableByName: _findTable(ctx),
   }
-  if (ctx.isAdmin) {
+  if (ctx.isOwner) {
     api.createTable = _createTable(ctx);
     api.ensure =  _ensure(ctx);
   }

@@ -6,11 +6,11 @@ const functions = require('./functions');
 exports.install = (ctx) => {
   // Public API that dont require Authorization or Authentication
 
-  ctx.as = (jwtToken, isAdmin) => {
+  ctx.as = (jwtToken, isOwner) => {
     asCtx = Object.assign({}, ctx);
     asCtx.originalToken = jwtToken;
     asCtx.token = {}
-    asCtx.isAdmin = isAdmin;
+    asCtx.isOwner = isOwner;
     exports.install(asCtx);
     return asCtx;
   }
