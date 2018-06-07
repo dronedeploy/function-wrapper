@@ -25,34 +25,58 @@ let res = {
     res.headers[name] = value;
   }
 };
+let columnDefinitions = [
+  {
+    input: {
+      columnType: "TEXT",
+      name: "name",
+      textLength: 255,
+      description: "Users name"
+    }
+  }
+];
 
+function findTableByName(ctx, name, slug) {
+  return ctx.datastore.findTableByName(name, slug)
+}
+
+function getTable(ctx) {
+  return function(tableId) {
+    return ctx.datastore.table(tableId);
+  }
+}
+
+let ownerJWT = process.argv[3] || process.argv[2];
 function handler(req, res, ctx) {
   // this is for mocking token.
   ctx.originalToken = process.argv[2];
-
-  let users = ctx
+  return ctx
+    .as(ownerJWT)
     .datastore
-    .table('Table:5ada2d8f27b7b90001b9c40a');
+      .ensure('zqyjaheaxvszfgrtdiep', 'new_table_1', 'mydescription', columnDefinitions)
+      .then(findTableByName(ctx, 'new_table_1', 'zqyjaheaxvszfgrtdiep'))
+      .then(getTable(ctx))
+      .then((users) => {
+        return users
+          // .addRow('mhernandez+test@dronedeploy.com', {name: 'Michaxel Hernandez'})
+          // .editRow('mhernandez+test@dronedeploy.com', {name: 'Michaxel Hernandez'})
+          .upsertRow('mhernandez+test@dronedeploy.com', {name: 'Michaxel Hernandez'})
+          .then(result => {
+            console.log(util.inspect(result, {depth: 20, colors: true}));
+          })
+          .then(() => {
+            users
+              .getRowByExternalId('mhernandez+test@dronedeploy.com')
+              .then((result) => {
+                console.log(util.inspect(result, {depth: 20, colors: true}));
+              })
 
-  // Get the users tables
-  users
-    // .addRow('mhernandez+test@dronedeploy.com', {name: 'Michaxel Hernandez'})
-    // .editRow('mhernandez+test@dronedeploy.com', {name: 'Michaxel Hernandez'})
-    .upsertRow('mhernandez+test@dronedeploy.com', {name: 'Michaxel Hernandez'})
-    .then(result => {
-      console.log(util.inspect(result, {depth: 20, colors: true}));
-    })
-    .then(() => {
-      users
-        .getRowByExternalId('mhernandez+test@dronedeploy.com')
-        .then((result) => {
-          console.log(util.inspect(result, {depth: 20, colors: true}));
-        })
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }).catch(console.error);
 
-    })
-    .catch(e => {
-      console.log(e);
-    });
 }
 
 
