@@ -39,3 +39,8 @@ Release 1.1.0
   - ctx.as (for owner users) also exposes a new ctx.datastore method. `ctx.datastore.ensure`.
   This method ensures that a table is created and its columns are created.
   
+Release 1.1.1
+- Known Issues
+  - None Currently ( Report any via GH issues )
+- Changes
+  - Add authentication support for parsing a JSON object with `jwt_token` field in the state query param
