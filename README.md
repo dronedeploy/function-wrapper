@@ -4,7 +4,6 @@ Drondeploy Functions API
 Installation
 ============
 
-Until this repo is published on NPM
 Install via
 `npm install --save @dronedeploy/function-wrapper`
 
