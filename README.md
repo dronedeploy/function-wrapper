@@ -6,7 +6,7 @@ Installation
 
 Until this repo is published on NPM
 Install via
-`npm install --save git+ssh://git@github.com/dronedeploy/function-wrapper.git`
+`npm install --save @dronedeploy/function-wrapper`
 
 
 How to use this repo in your DroneDeploy function
