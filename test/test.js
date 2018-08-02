@@ -51,11 +51,11 @@ describe('authentication', function() {
   describe('#verifyAudience()', function () {
     let oldAppSlug, oldFunctionId;
     before(function () {
-      oldAppSlug = global.APP_SLUG;
+      oldAppSlug = global.APP_ID;
       oldFunctionId = global.FUNCTION_ID;
     });
     afterEach(function () {
-      global.APP_SLUG = oldAppSlug;
+      global.APP_ID = oldAppSlug;
       global.FUNCTION_ID = oldFunctionId;
     });
 
@@ -74,8 +74,8 @@ describe('authentication', function() {
       const result = authentication.verifyAudience(decryptedJwt);
       assert.equal(result, true);
     });
-    it('should use the global.APP_SLUG when audiences is not provided', function () {
-      global.APP_SLUG = "api.dronedeploy.com";
+    it('should use the global.APP_ID when audiences is not provided', function () {
+      global.APP_ID = "api.dronedeploy.com";
       const result = authentication.verifyAudience(decryptedJwt);
       assert.equal(result, true);
     });

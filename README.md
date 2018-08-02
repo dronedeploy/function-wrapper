@@ -6,7 +6,7 @@ Installation
 
 Until this repo is published on NPM
 Install via
-`npm install --save git+ssh://git@github.com/dronedeploy/functions-wrapper.git`
+`npm install --save git+ssh://git@github.com/dronedeploy/function-wrapper.git`
 
 
 How to use this repo in your DroneDeploy function
@@ -16,7 +16,7 @@ In your index.js
 
 Import the module like so
 ```
-const bootstrap = require('functions-wrapper');
+const bootstrap = require('@dronedeploy/function-wrapper');
 ```
 
 The bootstrap method handles
