@@ -1,6 +1,10 @@
 CHANGELOG
 =============
 
+Relase 1.1.3
+
+- Addded Typescript typings
+
 Release 1.0.0
 - Known Issues
   - Environment Flag always resolves to `prod`
