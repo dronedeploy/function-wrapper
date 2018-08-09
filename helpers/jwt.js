@@ -1,6 +1,4 @@
 const jsonwebtoken = require('jsonwebtoken');
-const querystring = require('querystring');
-
 
 /**
 * decrypt ( token , jwk ) returns a decrypted token

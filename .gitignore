@@ -58,3 +58,6 @@ typings/
 .env
 
 .idea
+examples-typescript/*.js
+examples-typescript/*.d.ts
+examples-typescript/*.js.map

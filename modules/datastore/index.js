@@ -5,7 +5,7 @@ module.exports = (ctx) => {
     upsertRow: upsertRow(ctx),
     table: table(ctx),
     findTableByName: _findTable(ctx),
-  }
+  };
   if (ctx.isOwner) {
     api.createTable = _createTable(ctx);
     api.ensure =  _ensure(ctx);
@@ -36,9 +36,9 @@ function table(ctx) {
 
 function mutateRow(ctx) {
   return function (operation) {  // operation could be one of add, edit, delete, etc.
-    return function (tableId, externalId, data, exclude_fields) {
-      exclude_fields = exclude_fields || [];
-      const query = createDataMutationQuery(operation, exclude_fields);
+    return function (tableId, externalId, data, excludeFields) {
+      excludeFields = excludeFields || [];
+      const query = createDataMutationQuery(operation, excludeFields);
       const variables = createDataMutationVariables(tableId, externalId, data);
 
       return ctx.graphql.query(query, variables)
@@ -56,7 +56,7 @@ function mutateRow(ctx) {
               retVal = {
                 ok: true,
                 data: result.data[key].tableData
-              }
+              };
               retVal.data.data = JSON.parse(retVal.data.data);
               return retVal;
             }
@@ -75,9 +75,10 @@ function mutateRow(ctx) {
 }
 
 function upsertRow(ctx) {
-  return function (tableId, externalId, data, exclude_fields) {
+
+  return function (tableId, externalId, data, excludeFields) {
     const tableCtxId = table(ctx)(tableId);
-    return tableCtxId.addRow(externalId, data, exclude_fields)
+    return tableCtxId.addRow(externalId, data, excludeFields)
       .then((result) => {
         if (result.errors) {
           // externalId probably already exists (but could be any other error)
@@ -86,12 +87,12 @@ function upsertRow(ctx) {
         return result;
       })
       .catch(function () {  // TODO: test this codepath
-        return tableCtxId.editRow(externalId, data, exclude_fields);  // attempt to edit preexisting externalId
+        return tableCtxId.editRow(externalId, data, excludeFields);  // attempt to edit preexisting externalId
       });
   };
 }
 
-function createDataMutationQuery(operation, exclude_fields) {
+function createDataMutationQuery(operation, excludeFields) {
   let mutationName, inputName, outputName;
   if (operation === 'add') {
     mutationName = 'CreateTableData';
@@ -103,7 +104,7 @@ function createDataMutationQuery(operation, exclude_fields) {
     outputName = 'editTableData';
   }
   let $filtered = (field) => {
-    return exclude_fields.indexOf(field) !== -1
+    return excludeFields.indexOf(field) !== -1
   };
   let query = `
     mutation ${mutationName}($input: ${inputName}!) {
@@ -133,9 +134,9 @@ function createDataMutationVariables(tableId, externalId, data) {
 
 
 function getDatum(ctx) {
-  return function (table_id, externalKey) {
+  return function (tableId, externalKey) {
     const query = createGetTableDatumQuery();
-    const variables = createGetTableDatumVariables(table_id, externalKey)
+    const variables = createGetTableDatumVariables(tableId, externalKey);
     return ctx.graphql.query(query, variables)
       .then(result => {
         // make sure we convert data back into a javascript object
@@ -156,7 +157,7 @@ function getDatum(ctx) {
         }
       });
   };
-};
+}
 
 const resultContainsError = (result) => {
   return result.errors ? true : false;
@@ -184,6 +185,8 @@ const getColumnsToCreate = (ctx, appSlug, tableId, tableName, columnDefinitions)
 /**
  * Creates the specified columns on the table
  * @param {Object} ctx
+ * @param appSlug The app slug
+ * @param tableId The table ID
  * @param {String} tableName
  * @param {Array<Object>} columnDefinitions
  */
@@ -214,6 +217,8 @@ const _createTableColumns = (ctx, appSlug, tableId, tableName, columnDefinitions
 
 function _createTable(ctx) {
   return function (appSlug, tableName, tableDescription, columnDefinitions) {
+    // TODO Support ColumnBuilder
+
     const createInput = {
       input: {
         applicationId: "Application:"+appSlug,
@@ -249,6 +254,8 @@ function _findTable(ctx) {
 
 function _ensure(ctx) {
   return function(appSlug, tableName, tableDescription, columnDefinitions) {
+      // TODO Support ColumnBuilder
+    
     return ctx.graphql.query(createFindTableQuery(), createFindTableQueryVariables(tableName, appSlug))
       .then((result) => {
         if (resultContainsError(result)) {
