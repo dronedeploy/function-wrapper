@@ -14,8 +14,15 @@ How to use this repo in your DroneDeploy function
 In your index.js
 
 Import the module like so
-```
+
+```javascript
 const bootstrap = require('@dronedeploy/function-wrapper');
+```
+
+or with Typescript:
+
+```typescript
+import bootstrap from "@dronedeploy/function-wrapper";
 ```
 
 The bootstrap method handles
@@ -29,7 +36,7 @@ If an error is present a response will already have been sent ( at least in this
 The ctx object will have all the api methods available
 and references to the jwt token in both raw and decrypted form.
 
-```
+```javascript
 bootstrap(config, req, res, (err, ctx) => {
   if (err) {
     console.error(err, err.stack);
@@ -42,16 +49,14 @@ bootstrap(config, req, res, (err, ctx) => {
 The recommended usage (this and the above will likely be handled by dronedeploy-cli automatically ) is to import a file named handler.js, where most of the developers code lives.
 handler.js should expose one public method
 
-```
+```javascript
 // handler.js
 module.exports = (req, res, ctx) => {
 
 }
 ```
 
-Temporarily for testing purposes you can override the `ctx.originalToken` here if you set `mockToken: true `
-and `authRequired: false`
-in the config object. This is subject to change at any time.
+Temporarily for testing purposes you can override the `ctx.originalToken` here if you set `mockToken: true ` and `authRequired: false` in the config object. This is subject to change at any time.
 
 
 Api Methods
@@ -117,7 +122,61 @@ function handler(req, res, ctx) {
       console.log(e);
     });
 }
+```
 
+Or TypeScript (see `examples-typescript/basic-typescript.ts`:
+
+```typescript
+async function handler(req: Request, res: Response, ctx: Context) {
+  // this is for mocking token.
+  ctx.originalToken = process.argv[2];
+  return ctx
+    .as(ownerJWT, true)
+    .datastore
+    .ensure('zqyjaheaxvszfgrtdiep', 'new_table_1', 'mydescription',
+      [{
+        input: {
+          columnType: "TEXT",
+          name: "name",
+          textLength: 255,
+          description: "Users name",
+        }
+      }])
+    .then((tableId: string) => findTableByName(ctx, 'new_table_1', tableId))
+    .then((tableId: string) => ctx.datastore.table(tableId))
+    .then((users: Table) => {
+      users
+        .upsertRow('mhernandez+test@dronedeploy.com', {name: 'Michaxel Hernandez'})
+        .then((result: DatastoreResponse) => {
+          console.log(inspect(result, {depth: 20, colors: true}));
+        })
+        .then(() => {
+          users
+            .getRowByExternalId('mhernandez+test@dronedeploy.com')
+            .then((result) => {
+              console.log(inspect(result, {depth: 20, colors: true}));
+            })
+
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    }).catch(console.error);
+}
+
+export default async function func(req: Request, res: Response) {
+  return bootstrap(config, req, res, (err: Error, ctx: Context) => {
+      // Common headers should have been set automatically.
+      // Common requests like OPTIONS should have been handled automatically.
+      if (err) {
+        console.error(err, err.stack);
+        console.warn('An error occurred during the bootstrapping process. A default response has been sent and code paths have been stopped.');
+        return;
+      }
+
+      return handler(req, res, ctx);
+  });
+}
 ```
 
 Configuration
