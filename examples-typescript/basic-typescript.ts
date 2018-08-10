@@ -1,11 +1,11 @@
-import {
+import bootstrap, {
   Context,
-  MutationResponse,
+  DatastoreResponse,
   Request,
   Response,
   Table,
-  bootstrap
-} from "@dronedeploy/functions-wrapper";
+
+} from "@dronedeploy/function-wrapper";
 
 import {inspect} from "util";
 
@@ -60,7 +60,7 @@ async function handler(req: Request, res: Response, ctx: Context) {
     .then((users: Table) => {
       users
         .upsertRow('mhernandez+test@dronedeploy.com', {name: 'Michaxel Hernandez'})
-        .then((result: MutationResponse) => {
+        .then((result: DatastoreResponse) => {
           console.log(inspect(result, {depth: 20, colors: true}));
         })
         .then(() => {

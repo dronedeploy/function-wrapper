@@ -1,7 +1,7 @@
 CHANGELOG
 =============
 
-Relase 1.1.3
+Release 1.1.3
 
 - Addded Typescript typings
 

@@ -1,4 +1,4 @@
-declare module '@dronedeploy/functions-wrapper' {
+declare module '@dronedeploy/function-wrapper' {
 
   import * as e from "express";
 
@@ -7,7 +7,7 @@ declare module '@dronedeploy/functions-wrapper' {
    *
    * https://developer.dronedeploy.com/docs/sdk-beta/datastore.html
    */
-  interface Datastore {
+  export interface Datastore {
 
     /**
      * Finds the table ID by its name
@@ -29,17 +29,19 @@ declare module '@dronedeploy/functions-wrapper' {
   }
 
   /**
-   * Response returned from a datastore mutation
+   * Response returned from a datastore operation
    */
-  interface MutationResponse {
+  export interface DatastoreResponse {
     ok: boolean;
-    error?: any;
+    errors?: object[];
+    data?: object[];
   }
 
   /**
    * Interactions with a table.
    */
-  interface Table {
+  export interface Table {
+    
     /**
      * Inserts a row
      *
@@ -47,7 +49,7 @@ declare module '@dronedeploy/functions-wrapper' {
      * @param row
      * @returns {Promise<module:dronedeploy/functions-wrapper.MutationResponse>}
      */
-    addRow(externalId: string, row: any): Promise<MutationResponse>;
+    addRow(externalId: string, row: object): Promise<DatastoreResponse>;
 
     /**
      * Updates a row
@@ -56,7 +58,7 @@ declare module '@dronedeploy/functions-wrapper' {
      * @param row
      * @returns {Promise<module:dronedeploy/functions-wrapper.MutationResponse>}
      */
-    editRow(externalId: string, row: any): Promise<MutationResponse>;
+    editRow(externalId: string, row: object): Promise<DatastoreResponse>;
 
     /**
      * Upserts a row
@@ -65,7 +67,7 @@ declare module '@dronedeploy/functions-wrapper' {
      * @param row
      * @returns {Promise<module:dronedeploy/functions-wrapper.MutationResponse>}
      */
-    upsertRow(externalId: string, row: any): Promise<MutationResponse>;
+    upsertRow(externalId: string, row: object): Promise<DatastoreResponse>;
 
     /**
      * Retrieves a row of data by ID
@@ -73,13 +75,13 @@ declare module '@dronedeploy/functions-wrapper' {
      * @param {string} externalId The external ID
      * @returns {Promise<any>} The row of data
      */
-    getRowByExternalId(externalId: string): Promise<any>;
+    getRowByExternalId(externalId: string): Promise<object>;
   }
 
   /**
    * If you are an owner, then you can access additional admin functionality
    */
-  interface OwnerDatastore extends Datastore {
+  export interface OwnerDatastore extends Datastore {
 
     /**
      * Creates a table
@@ -104,70 +106,70 @@ declare module '@dronedeploy/functions-wrapper' {
     ensure(appSlug: string, tableName: string, description: string, columnDefinitions?: ColumnDefinitionInput[]): Promise<string>
   }
 
-  interface ColumnDefinitionInput {
+  export interface ColumnDefinitionInput {
     input: ColumnDefinition
   }
 
   /**
    * The different types of column definitions.
    */
-  type ColumnDefinition =
+  export type ColumnDefinition =
     DateColumnDefinition | DateTimeColumnDefinition | EmailColummDefinition | NumberColumnDefinition | TextColumnDefinition;
 
   /**
    * The string literals for column types.
    */
-  type ColumnType = "DATE" | "DATETIME" | "EMAIL" | "NUMBER" | "TEXT";
+  export type ColumnType = "DATE" | "DATETIME" | "EMAIL" | "NUMBER" | "TEXT";
 
   /**
    * Common properties on all columns
    */
-  interface GenericColumnDefinition<T extends ColumnType> {
+  export interface GenericColumnDefinition<T extends ColumnType> {
     columnType: T;
     name: string;
     description: string;
-    nullabe?: string;
+    nullable?: boolean;
   }
 
   /**
    * Represents DATE columns
    */
-  interface DateColumnDefinition extends GenericColumnDefinition<"DATE"> {
+  export interface DateColumnDefinition extends GenericColumnDefinition<"DATE"> {
   }
 
   /**
    * Represents DATETIME columns
    */
-  interface DateTimeColumnDefinition extends GenericColumnDefinition<"DATETIME"> {
+  export interface DateTimeColumnDefinition extends GenericColumnDefinition<"DATETIME"> {
   }
 
   /**
    * Represents EMAIL columns
    */
-  interface EmailColummDefinition extends GenericColumnDefinition<"EMAIL"> {
+  export interface EmailColummDefinition extends GenericColumnDefinition<"EMAIL"> {
   }
 
   /**
    * Represents NUMBER columns
    */
-  interface NumberColumnDefinition extends GenericColumnDefinition<"NUMBER"> {
+  export interface NumberColumnDefinition extends GenericColumnDefinition<"NUMBER"> {
     numberType: NumberType;
   }
 
   /**
    * The type of number to represent
    */
-  type NumberType = "INTEGER" | "FLOAT";
+  export type NumberType = "INTEGER" | "FLOAT";
 
   /**
    * Reprents TEXT columns
    */
-  interface TextColumnDefinition extends GenericColumnDefinition<"TEXT"> {
+  export interface TextColumnDefinition extends GenericColumnDefinition<"TEXT"> {
     textLength?: number;
     textEncrypted?: boolean;
   }
 
-  interface GraphQL {
+  export interface GraphQL {
 
     /**
      * Runs a query against the GraphQL API
@@ -183,14 +185,14 @@ declare module '@dronedeploy/functions-wrapper' {
   /**
    * The request object passed into the function
    */
-  interface Request extends e.Request {
+  export interface Request extends e.Request {
     ctx: Context
   }
 
   /**
    * The response object passed into the function
    */
-  interface Response extends e.Response {
+  export interface Response extends e.Response {
   }
 
   /**
@@ -199,9 +201,9 @@ declare module '@dronedeploy/functions-wrapper' {
    * If an error is present, then it has already been sent to the client so the response
    * object cannot be mutated.
    */
-  type FunctionCallback =  (err: any | undefined, context: Context) => void;
+  export type FunctionCallback =  (err: any | undefined, context: Context) => void;
 
-  type JwtToken = string | any;
+  export type JwtToken = { username: string }
 
   /**
    * The base interface for the Function context
@@ -216,14 +218,14 @@ declare module '@dronedeploy/functions-wrapper' {
   /**
    * The context passed into every function invocation.
    */
-  interface Context extends BaseContext {
+  export interface Context extends BaseContext {
     datastore: Datastore;
   }
 
   /**
    * If the user elevates their context to the owner context, then they get additional datastore functionality.
    */
-  interface AdminContext extends BaseContext {
+  export interface AdminContext extends BaseContext {
     datastore: OwnerDatastore,
   }
 
@@ -231,14 +233,14 @@ declare module '@dronedeploy/functions-wrapper' {
    * Allows consumers to pass in an array of CORS headers to be set by default for every
    * function invocation.
    */
-  interface Cors {
+  export interface Cors {
     headers?: string[],
   }
 
   /**
    * Additional configuration
    */
-  interface NestedConfig {
+  export interface NestedConfig {
     cors?: Cors;
     [key: string]: any;
   }
@@ -246,7 +248,7 @@ declare module '@dronedeploy/functions-wrapper' {
   /**
    * Configuration for the function
    */
-  interface Config {
+  export interface Config {
 
     /**
      * Indicates that authorization is required for the function and will return 401 if a valid
@@ -276,5 +278,5 @@ declare module '@dronedeploy/functions-wrapper' {
    * @param {module:dronedeploy/functions-wrapper.Response} res The HTTP response
    * @param {module:dronedeploy/functions-wrapper.FunctionCallback} callback
    */
-  export function bootstrap(config: Config, req: Request, res: Response, callback: FunctionCallback): void;
+  export default function bootstrap(config: Config, req: Request, res: Response, callback: FunctionCallback): void;
 }
