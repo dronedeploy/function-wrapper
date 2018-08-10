@@ -1,10 +1,6 @@
 CHANGELOG
 =============
 
-Release 1.1.3
-
-- Addded Typescript typings
-
 Release 1.0.0
 - Known Issues
   - Environment Flag always resolves to `prod`
@@ -42,9 +38,12 @@ Release 1.1.0
   - New Method ctx.as(token) allows the ability to switch context to a different user, for instance the user whom owns the plugin. Provided you have the token for that user.
   - ctx.as (for owner users) also exposes a new ctx.datastore method. `ctx.datastore.ensure`.
   This method ensures that a table is created and its columns are created.
-  
+
 Release 1.1.1
 - Known Issues
   - None Currently ( Report any via GH issues )
 - Changes
   - Add authentication support for parsing a JSON object with `jwt_token` field in the state query param
+
+Release 1.1.3
+- Added Typescript typings
