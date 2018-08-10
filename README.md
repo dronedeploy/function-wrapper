@@ -72,7 +72,7 @@ Methods on the table object
 
 Example Response for add, edit, upsert
 
-```
+```javascript
 { ok: true,
   data:
    { id: 'TableData:5ae711f72852b900016b0895',
@@ -87,7 +87,7 @@ Example Response for add, edit, upsert
 
 Example Response for get
 
-```
+```javascript
 { ok: true, data: { name: 'Michael Hernandez' } }
 ```
 
