@@ -93,7 +93,7 @@ Example Response for get
 
 Example handler showing the aformentioned methods in use, also see file `examples/basic.js`
 
-```
+```javascript
 function handler(req, res, ctx) {
   // this is for mocking token.
   ctx.originalToken = process.argv[2] // or switch this out for yours.;
@@ -183,7 +183,7 @@ Configuration
 ================
 example configuration object
 
-```
+```javascript
 // in the index.js
 config = require('./config.json');
 // may change to yaml
