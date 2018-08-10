@@ -13,7 +13,7 @@ exports.install = (ctx) => {
     asCtx.isOwner = isOwner;
     exports.install(asCtx);
     return asCtx;
-  }
+  };
   // Set up proxy functions for private API's
   ctx.datastore = new Proxy(Object.create(null), {
     get: (receiver, name) => {

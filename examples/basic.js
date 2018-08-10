@@ -1,4 +1,4 @@
-const util = require('util')
+const util = require('util');
 const bootstrap = require('../index');
 
 let config = {
@@ -36,16 +36,6 @@ let columnDefinitions = [
   }
 ];
 
-function findTableByName(ctx, name, slug) {
-  return ctx.datastore.findTableByName(name, slug)
-}
-
-function getTable(ctx) {
-  return function(tableId) {
-    return ctx.datastore.table(tableId);
-  }
-}
-
 let ownerJWT = process.argv[3] || process.argv[2];
 function handler(req, res, ctx) {
   // this is for mocking token.
@@ -54,8 +44,8 @@ function handler(req, res, ctx) {
     .as(ownerJWT, true)
     .datastore
       .ensure('zqyjaheaxvszfgrtdiep', 'new_table_1', 'mydescription', columnDefinitions)
-      .then(findTableByName(ctx, 'new_table_1', 'zqyjaheaxvszfgrtdiep'))
-      .then(getTable(ctx))
+      .then(ctx => ctx.datastore.findTableByName('new_table_1', 'zqyjaheaxvszfgrtdiep'))
+      .then(ctx => ctx.datastore.table(tableId))
       .then((users) => {
         return users
           // .addRow('mhernandez+test@dronedeploy.com', {name: 'Michaxel Hernandez'})
@@ -76,7 +66,6 @@ function handler(req, res, ctx) {
             console.log(e);
           });
       }).catch(console.error);
-
 }
 
 
