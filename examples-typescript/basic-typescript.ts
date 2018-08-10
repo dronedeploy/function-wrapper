@@ -4,7 +4,6 @@ import bootstrap, {
   Request,
   Response,
   Table,
-
 } from "@dronedeploy/function-wrapper";
 
 import {inspect} from "util";
