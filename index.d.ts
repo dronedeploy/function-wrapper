@@ -33,8 +33,8 @@ declare module '@dronedeploy/function-wrapper' {
    */
   export interface DatastoreResponse {
     ok: boolean;
-    errors?: object[];
-    data?: object[];
+    errors?: Error[];
+    data?: any[];
   }
 
   /**
@@ -75,7 +75,7 @@ declare module '@dronedeploy/function-wrapper' {
      * @param {string} externalId The external ID
      * @returns {Promise<any>} The row of data
      */
-    getRowByExternalId(externalId: string): Promise<object>;
+    getRowByExternalId(externalId: string): Promise<any>;
   }
 
   /**
