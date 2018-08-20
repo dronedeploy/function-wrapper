@@ -47,3 +47,6 @@ Release 1.1.1
 
 Release 1.1.3
 - Added Typescript typings
+
+Release 1.1.4
+- Fix issues with Datastore typings
