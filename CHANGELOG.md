@@ -50,3 +50,8 @@ Release 1.1.3
 
 Release 1.1.4
 - Fix issues with Datastore typings
+
+Release 1.1.5
+- Changes 
+  - Remove authentication support for parsing JSON object in state query param
+  - Add ability to bypass auth for specific routes
