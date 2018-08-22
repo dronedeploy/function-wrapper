@@ -257,6 +257,11 @@ declare module '@dronedeploy/function-wrapper' {
     authRequired: boolean;
 
     /**
+     * Defines specific routes that will be ignored during authorization checks
+     */
+    ignoreAuthRoutes: string[];
+
+    /**
      * Indicates whether to mock the token; useful for development purposes. If this is set to true, then
      * authRequired must be set to false.
      */

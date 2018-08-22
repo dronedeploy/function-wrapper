@@ -42,11 +42,18 @@ module.exports = (config, req, res, cb) => {
       res.status(200).send();
   }
 
+  const ignoreAuthForRoute = (route) => {
+    if (config.ignoreAuthRoutes && config.ignoreAuthRoutes.length > 0) {
+      return config.ignoreAuthRoutes.contains(route);
+    }
+    return false;
+  };
+
   let token;
   try {
     token = jwt.parse(req);
   } catch (e) {
-    if (config.authRequired) {
+    if (config.authRequired && !ignoreAuthForRoute(req.path)) {
       res.status(401).send({
         error: {
           'message': 'Could not find user credentials.'
