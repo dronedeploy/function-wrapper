@@ -58,4 +58,4 @@ Release 1.1.5
 
 Release 1.1.6
 - Changes
-  - Bug fix
+  - Bug fix on array element check for route check
