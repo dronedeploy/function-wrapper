@@ -55,3 +55,7 @@ Release 1.1.5
 - Changes 
   - Remove authentication support for parsing JSON object in state query param
   - Add ability to bypass auth for specific routes
+
+Release 1.1.6
+- Changes
+  - Bug fix on array element check for route check

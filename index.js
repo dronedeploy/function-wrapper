@@ -44,7 +44,7 @@ module.exports = (config, req, res, cb) => {
 
   const ignoreAuthForRoute = (route) => {
     if (config.ignoreAuthRoutes && config.ignoreAuthRoutes.length > 0) {
-      return config.ignoreAuthRoutes.contains(route);
+      return config.ignoreAuthRoutes.includes(route);
     }
     return false;
   };
