@@ -1,9 +1,21 @@
+const { getBootstrapConfig } = require('./helpers/config');
+const { handleInternalError } = require('./helpers/errors');
 const jwt = require('./helpers/jwt');
 const modules = require('./modules');
 const authentication = require('./lib/authentication');
 
+module.exports = function bootstrap(handlerFactoryFunction) {
+  return (req, res) => {
+    wrapFunction(getBootstrapConfig(), req, res, (bootstrapError, ctx) => {
+      if (bootstrapError) {
+        return handleInternalError(res, bootstrapError);
+      }
+      handlerFactoryFunction(ctx)(req, res);
+    });
+  };
+};
 
-module.exports = (config, req, res, cb) => {
+function wrapFunction(config, req, res, cb) {
   if (config.authRequired !== false) {
     // test for strict equality disable of auth.
     config.authRequired = true;
@@ -39,7 +51,7 @@ module.exports = (config, req, res, cb) => {
   // IF Method is OPTIONS we want to return after setting headers
   // @TODO may want to put this behind a disable flag
   if (req.method === 'OPTIONS') {
-      res.status(200).send();
+    res.status(200).send();
   }
 
   const ignoreAuthForRoute = (route) => {
@@ -94,4 +106,4 @@ module.exports = (config, req, res, cb) => {
       modules.install(ctx);
       return cb(null, ctx);
     });
-};
+}
