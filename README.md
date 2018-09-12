@@ -180,5 +180,5 @@ Example
 ```
 AUTH_REQUIRED=false
 MOCK_TOKEN=true
-CORS_HEADERS={"x-custom-token":"KFKKAJFOO@#J!@#MO"}
+CORS_HEADERS=x-custom-token,x-some-other-allowed-header
 ```
