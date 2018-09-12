@@ -30,34 +30,24 @@ The bootstrap method handles
 - Default HTTP responses for auth failure, and OPTIONS routes
 - Setting up CORS Headers
 
-The bootstrap method returns an error or a ctx object.
-If an error is present a response will already have been sent ( at least in this version ), so do not use the `res` objects methods if error is received.
-
 The ctx object will have all the api methods available
 and references to the jwt token in both raw and decrypted form.
 
-```javascript
-bootstrap(config, req, res, (err, ctx) => {
-  if (err) {
-    console.error(err, err.stack);
-    console.warn('An error occurred during the bootstrapping process. A default response has been sent and code paths have been stopped.');
-    return;
-  }
-});
-```
-
-The recommended usage (this and the above will likely be handled by dronedeploy-cli automatically ) is to import a file named handler.js, where most of the developers code lives.
-handler.js should expose one public method
+The recommended usage is to import a file named handler.js, where most of the developers code lives. handler.js should expose one public method
 
 ```javascript
 // handler.js
 module.exports = (req, res, ctx) => {
-
+   
 }
 ```
 
-Temporarily for testing purposes you can override the `ctx.originalToken` here if you set `mockToken: true ` and `authRequired: false` in the config object. This is subject to change at any time.
+```javascript
+// index.js
+exports.dronedeploy = bootstrap((ctx) => (req, res) => handler(req, res, ctx));
+```
 
+Temporarily for testing purposes you can override the `ctx.originalToken`, if you set `MOCK_TOKEN=true` and `AUTH_REQUIRED=false` in the `.env` file.
 
 Api Methods
 ================
@@ -181,22 +171,14 @@ export default async function func(req: Request, res: Response) {
 
 Configuration
 ================
-example configuration object
+Configuration in `.env` file:
+- `AUTH_REQUIRED=<boolean_string>`, set to true for testing or if your function does not use dd's api's
+- `MOCK_TOKEN=<boolean_string>`, // set to true to allow token
+- `CORS_HEADERS=<comma_separated_headers>` // add custom headers that should be allowed past cors here
 
-```javascript
-// in the index.js
-config = require('./config.json');
-// may change to yaml
-boostrap(config, req, res, (err, ctx) => {})
-
-// config.json
-{
-  "authRequired": false,  // set to true for testing or if your function does not use dd's api's
-  "mockToken": true, // set to true to allow token
-  "cors": {
-    "headers": { // add custom headers that should be allowed past cors here
-      'x-custom-token': 'KFKKAJFOO@#J!@#MO'
-    }
-  }
-}
+Example
+```
+AUTH_REQUIRED=false
+MOCK_TOKEN=true
+CORS_HEADERS=x-custom-token,x-some-other-allowed-header
 ```
