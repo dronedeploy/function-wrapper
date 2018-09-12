@@ -5,7 +5,7 @@ module.exports = {
 function getBootstrapConfig() {
   return {
     authRequired: strToBool(process.env.AUTH_REQUIRED, true),
-    config: { cors: { headers: [] } },
+    config: { cors: { headers: (process.env.CORS_HEADERS || '').split(',').filter(Boolean) } },
     mockToken: strToBool(process.env.MOCK_TOKEN, false),
   };
 }
