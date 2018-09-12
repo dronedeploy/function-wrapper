@@ -174,7 +174,7 @@ Configuration
 Configuration in `.env` file:
 - `AUTH_REQUIRED=<boolean_string>`, set to true for testing or if your function does not use dd's api's
 - `MOCK_TOKEN=<boolean_string>`, // set to true to allow token
-- `CORS_HEADERS=<one_line_json_with_headers>` // add custom headers that should be allowed past cors here
+- `CORS_HEADERS=<comma_separated_headers>` // add custom headers that should be allowed past cors here
 
 Example
 ```
