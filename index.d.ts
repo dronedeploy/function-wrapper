@@ -278,10 +278,8 @@ declare module '@dronedeploy/function-wrapper' {
    * The wrapper method will handle authentication, default responses for auth failures and OPTIONS routes,
    * and setup CORS headers for your functions.
    *
-   * @param {module:dronedeploy/functions-wrapper.Config} config
-   * @param {module:dronedeploy/functions-wrapper.Request} req The HTTP request
-   * @param {module:dronedeploy/functions-wrapper.Response} res The HTTP response
-   * @param {module:dronedeploy/functions-wrapper.FunctionCallback} callback
+   * @param handlerFactoryFunction
    */
-  export default function bootstrap(config: Config, req: Request, res: Response, callback: FunctionCallback): void;
+  export default function bootstrap(handlerFactoryFunction: (ctx: Context) => (req: e.Request, res: e.Response) => any):
+    (req: e.Request, res: e.Response) => void;
 }

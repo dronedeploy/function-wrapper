@@ -1,12 +1,12 @@
-const dotenv = require('dotenv');
-globalizeAppIdForBootstrap();
+const { getBootstrapConfig } = require('./helpers/config');
+const { handleInternalError } = require('./helpers/errors');
 const jwt = require('./helpers/jwt');
 const modules = require('./modules');
 const authentication = require('./lib/authentication');
 
 module.exports = function bootstrap(handlerFactoryFunction) {
   return (req, res) => {
-    bootstrapFunction(getBootstrapConfig(), req, res, (bootstrapError, ctx) => {
+    wrapFunction(getBootstrapConfig(), req, res, (bootstrapError, ctx) => {
       if (bootstrapError) {
         return handleInternalError(res, bootstrapError);
       }
@@ -15,16 +15,7 @@ module.exports = function bootstrap(handlerFactoryFunction) {
   };
 };
 
-function globalizeAppIdForBootstrap() {
-  dotenv.config();
-  global.APP_ID = process.env.APP_ID;
-  if (!global.APP_ID) {
-    const msg = 'App id not available, did you deploy using DroneDeploy-Cli?';
-    throw new Error(msg);
-  }
-}
-
-function bootstrapFunction(config, req, res, cb) {
+function wrapFunction(config, req, res, cb) {
   if (config.authRequired !== false) {
     // test for strict equality disable of auth.
     config.authRequired = true;
@@ -115,26 +106,4 @@ function bootstrapFunction(config, req, res, cb) {
       modules.install(ctx);
       return cb(null, ctx);
     });
-}
-
-function getBootstrapConfig() {
-  return {
-    authRequired: strToBool(process.env.AUTH_REQUIRED, true),
-    config: { cors: { headers: [] } },
-    mockToken: strToBool(process.env.MOCK_TOKEN, false),
-  };
-}
-
-function strToBool(text, defaultValue) {
-  return text ? text.toLowerCase() === 'true' : defaultValue;
-}
-
-function handleInternalError(res, error) {
-  console.error('An unexpected error has occurred: ', error);
-  return res.status(500).end(stringifyError(error));
-}
-
-
-function stringifyError(error) {
-  return JSON.stringify({ message: error.message, name: error.name, stack: error.stack });
 }
