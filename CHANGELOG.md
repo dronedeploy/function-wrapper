@@ -59,3 +59,9 @@ Release 1.1.5
 Release 1.1.6
 - Changes
   - Bug fix on array element check for route check
+
+Release 1.1.7
+- Changes
+  - Simplified function-wrapper `bootstrap` function (non-backwards compatable)
+  - Update dependencies to address security vulnerability
+  - Allow definition of custom CORS headers in `CORS_HEADERS` environment variable
