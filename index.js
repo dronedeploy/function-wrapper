@@ -79,7 +79,18 @@ function wrapFunction(config, req, res, cb) {
 
   const decryptTokenWithKeys = authentication.decryptTokenWithKeys.bind(undefined, token);
   authentication.getPublicKeys()
-    .then(decryptTokenWithKeysm, function (e) {
+    .then(decryptTokenWithKeys)
+    .then(function (decryptedToken) {
+      let validAudience = authentication.verifyAudience(decryptedToken);
+      if (!validAudience) {
+        throw new authentication.WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
+      }
+      ctx.originalToken = token;
+      ctx.token = decryptedToken;
+      modules.install(ctx);
+      cb(null, ctx);
+    })
+    .catch(function (e) {
       let message = 'Could not decrypt token with any of the public keys';
       if (e instanceof authentication.WrongAudienceError) {
         message = e.message;
@@ -94,22 +105,5 @@ function wrapFunction(config, req, res, cb) {
       }
       modules.install(ctx);
       return cb(null, ctx);
-    })
-    .then(function (decryptedToken) {
-      let validAudience = authentication.verifyAudience(decryptedToken);
-      if (!validAudience) {
-        throw new authentication.WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
-      }
-      ctx.originalToken = token;
-      ctx.token = decryptedToken;
-      modules.install(ctx);
-      cb(null, ctx);
-    })
-    .catch( function(e) {
-      res.status(500).send({
-          error: {
-            'message': 'Unexpected error occurred in function.'
-          }
-        })
     });
 }
