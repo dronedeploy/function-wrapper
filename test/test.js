@@ -1,8 +1,14 @@
 const assert = require('assert');
+const chai = require('chai');
+const sinon = require('sinon');
+process.env.APP_ID = 'function_id';
+process.env.DDENV = 'test';
 const authentication = require('../lib/authentication');
+const wrapper = require('../');
 process.env.VCR_MODE = "playback";
 const sepia = require('sepia');
 sepia.configure({debug: true});
+
 
 
 describe('authentication', function() {
@@ -45,6 +51,66 @@ describe('authentication', function() {
         },
         /^JsonWebTokenError: invalid signature$/
       );
+    });
+  });
+
+  describe("wrapper", () => {
+    describe("checkAuthentication", () => {
+      beforeEach(() => {
+        sandbox = sinon.createSandbox();
+
+      })
+      afterEach(() => {
+        sandbox.restore();
+      })
+      it('should not fail', (done) => {
+        const config = { authRequired: true }
+        const res = { 
+          status: () => {
+            return { send: () => {} };
+          },
+        };
+        const ctx = {}
+        wrapper.__checkAuthentication(config, res, encryptedJwt, ctx, (err, ctx) => {
+          assert.equal(err, null);
+          assert.notEqual(ctx, null);
+          assert.notEqual(ctx, undefined);
+          done(err);
+        });
+      });
+      it('should propagagate the rejection errors', (done) => {
+        const config = { authRequired: true }
+        const res = { 
+          status: () => {
+            return { send: () => {} };
+          },
+        };
+        const ctx = {}
+        sandbox.stub(wrapper, '__getPublicKeys').returns(Promise.resolve(['wrong keys']));
+        wrapper.__checkAuthentication(config, res, encryptedJwt, ctx, (err, ctx) => {
+          assert.equal(ctx, undefined);
+          assert.equal(err.message, 'Authentication Error: Could not decrypt token with any of the public keys, please contact support@dronedeploy.com');
+          done();
+        });
+      });
+      it('should return a invalid audience error', (done) => {
+        const config = { authRequired: true }
+        const res = { 
+          status: () => {
+            return { send: () => {} };
+          },
+        };
+        const ctx = {}
+        // wrapper.__getPublicKeys = () => { return Promise.resolve(['wrong key'])}
+        // sinon.stub(wrapper, '__getPublicKeys').returns(Promise.reject(['wrong key']));
+        sandbox.stub(wrapper, '__getPublicKeys').returns(Promise.resolve([publicKey]));
+        sinon.stub(wrapper, '__verifyAudience').returns(false);
+        wrapper.__checkAuthentication(config, res, encryptedJwt, ctx, (err, ctx) => {
+          assert.equal(ctx, undefined);
+          assert.equal(err.message, "Authentication Error: Token's audience function_id,api.dronedeploy.com did not match any for this function.");
+          done();
+        });
+      });
     });
   });
 
@@ -109,6 +175,9 @@ describe('authentication', function() {
       return authentication.getPublicKeys()
         .then(function (result) {
           assert.deepEqual(result, keysResponse);
+        })
+        .catch((err) => {
+          throw err;
         });
     });
   });

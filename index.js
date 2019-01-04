@@ -3,6 +3,49 @@ const { handleInternalError } = require('./helpers/errors');
 const jwt = require('./helpers/jwt');
 const modules = require('./modules');
 const authentication = require('./lib/authentication');
+const jsonwebtoken = require('jsonwebtoken');
+
+const checkAuthentication = (config, res, token, ctx, cb) => {
+  const decryptTokenWithKeys = authentication.decryptTokenWithKeys.bind(undefined, token);
+  module.exports.__getPublicKeys()
+    .then(decryptTokenWithKeys)
+    .then(function (decryptedToken) {
+      let validAudience = module.exports.__verifyAudience(decryptedToken);
+      if (!validAudience) {
+        throw new authentication.WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
+      }
+      ctx.originalToken = token;
+      ctx.token = decryptedToken;
+      modules.install(ctx);
+      cb(null, ctx);
+    })
+    .catch(function (e) {
+      let message = "Authentication Error: An unexpected error has occurred, please contact support@dronedeploy.com"
+      let statusCode = 500;
+      if (e instanceof jsonwebtoken.JsonWebTokenError) {
+        // Can probably even make this more specific, however should be good for now.
+        message = 'Authentication Error: Could not decrypt token with any of the public keys, please contact support@dronedeploy.com';
+        statusCode = 401;
+      }
+      if (e instanceof authentication.WrongAudienceError) {
+        message = 'Authentication Error: ' + e.message;
+        statusCode = 401;
+      }
+      
+      if (config.authRequired) {
+        res.status(statusCode).send({
+          error: {
+            'message': message
+          }
+        });
+        // exit function early
+        return cb(new Error(message));
+      }
+      
+      modules.install(ctx);
+      return cb(null, ctx);
+    });
+}
 
 module.exports = function bootstrap(handlerFactoryFunction) {
   return (req, res) => {
@@ -54,56 +97,42 @@ function wrapFunction(config, req, res, cb) {
     res.status(200).send();
   }
 
-  const ignoreAuthForRoute = (route) => {
-    if (config.ignoreAuthRoutes && config.ignoreAuthRoutes.length > 0) {
-      return config.ignoreAuthRoutes.includes(route);
-    }
-    return false;
-  };
-
   let token;
   try {
     token = jwt.parse(req);
   } catch (e) {
-    if (config.authRequired && !ignoreAuthForRoute(req.path)) {
+    if (config.authRequired && !module.exports.__ignoreAuthForRoute(req.path)) {
       res.status(401).send({
         error: {
           'message': 'Could not find user credentials.'
         }
       });
-      return cb(e, ctx);
+      return cb(e);
     }
     modules.install(ctx);
     return cb(null, ctx);
   }
 
-  const decryptTokenWithKeys = authentication.decryptTokenWithKeys.bind(undefined, token);
-  authentication.getPublicKeys()
-    .then(decryptTokenWithKeys)
-    .then(function (decryptedToken) {
-      let validAudience = authentication.verifyAudience(decryptedToken);
-      if (!validAudience) {
-        throw new authentication.WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
-      }
-      ctx.originalToken = token;
-      ctx.token = decryptedToken;
-      modules.install(ctx);
-      cb(null, ctx);
-    })
-    .catch(function (e) {
-      let message = 'Could not decrypt token with any of the public keys';
-      if (e instanceof authentication.WrongAudienceError) {
-        message = e.message;
-      }
-      if (config.authRequired) {
-        res.status(401).send({
-          error: {
-            'message': message
-          }
-        });
-        return cb(e, ctx);
-      }
-      modules.install(ctx);
-      return cb(null, ctx);
-    });
+  checkAuthentication(config, res, token, ctx, cb);
 }
+
+
+const ignoreAuthForRoute = (route) => {
+  if (config.ignoreAuthRoutes && config.ignoreAuthRoutes.length > 0) {
+    return config.ignoreAuthRoutes.includes(route);
+  }
+  return false;
+};
+
+const getPublicKeys = () => {
+  return authentication.getPublicKeys();
+}
+
+const verifyAudience = (decryptedToken) => {
+  return authentication.verifyAudience(decryptedToken);
+}
+
+module.exports.__checkAuthentication = checkAuthentication;
+module.exports.__ignoreAuthForRoute = ignoreAuthForRoute;
+module.exports.__getPublicKeys = getPublicKeys;
+module.exports.__verifyAudience = verifyAudience;
