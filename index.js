@@ -31,7 +31,7 @@ const checkAuthentication = (config, res, token, ctx, cb) => {
         message = 'Authentication Error: ' + e.message;
         statusCode = 401;
       }
-      
+
       if (config.authRequired) {
         res.status(statusCode).send({
           error: {
@@ -41,11 +41,11 @@ const checkAuthentication = (config, res, token, ctx, cb) => {
         // exit function early
         return cb(new Error(message));
       }
-      
+
       modules.install(ctx);
       return cb(null, ctx);
     });
-}
+};
 
 module.exports = function bootstrap(handlerFactoryFunction) {
   return (req, res) => {
@@ -78,7 +78,7 @@ function wrapFunction(config, req, res, cb) {
   config.cors.headers = config.cors.headers || [];
 
   // Combine user headers with our own defaults
-  corsHeaders = ['Content-Type', 'Authorization'];
+  const corsHeaders = ['Content-Type', 'Authorization'];
   config.cors.headers.forEach((header) => {
     if (corsHeaders.indexOf(header) === -1) {
       corsHeaders.push(header);
@@ -126,11 +126,11 @@ const ignoreAuthForRoute = (route) => {
 
 const getPublicKeys = () => {
   return authentication.getPublicKeys();
-}
+};
 
 const verifyAudience = (decryptedToken) => {
   return authentication.verifyAudience(decryptedToken);
-}
+};
 
 module.exports.__checkAuthentication = checkAuthentication;
 module.exports.__ignoreAuthForRoute = ignoreAuthForRoute;

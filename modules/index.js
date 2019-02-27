@@ -9,7 +9,7 @@ exports.install = (ctx) => {
   ctx.as = (jwtToken, isOwner) => {
     asCtx = Object.assign({}, ctx);
     asCtx.originalToken = jwtToken;
-    asCtx.token = {}
+    asCtx.token = {};
     asCtx.isOwner = isOwner;
     exports.install(asCtx);
     return asCtx;
