@@ -2,6 +2,7 @@ module.exports = (ctx) => {
   let api = {
     addRow: mutateRow(ctx)('add'),
     editRow: mutateRow(ctx)('edit'),
+    deleteRows: mutateRow(ctx)('delete'),
     upsertRow: upsertRow(ctx),
     table: table(ctx),
     findTableByName: _findTable(ctx),
@@ -22,12 +23,14 @@ module.exports = (ctx) => {
  table = dd.datastore.table('ANDKKDKEJJERKER')
  table.addRow('john_doe@gmail.com', {name: 'John Doe'});
  table.editRow('john_doe@gmail.com', {name: 'John'});
+ table.deleteRows('john_doe@gmail.com');
 */
 function table(ctx) {
   return function (tableId) {
     return {
       addRow: mutateRow(ctx)('add').bind(Object.create(null), tableId),
       editRow: mutateRow(ctx)('edit').bind(Object.create(null), tableId),
+      deleteRows: mutateRow(ctx)('delete').bind(Object.create(null), tableId),
       upsertRow: upsertRow(ctx).bind(Object.create(null), tableId),
       getRowByExternalId: getDatum(ctx).bind(Object.create(null), tableId),
     }
@@ -38,27 +41,26 @@ function mutateRow(ctx) {
   return function (operation) {  // operation could be one of add, edit, delete, etc.
     return function (tableId, externalId, data, excludeFields) {
       excludeFields = excludeFields || [];
-      const query = createDataMutationQuery(operation, excludeFields);
-      const variables = createDataMutationVariables(tableId, externalId, data);
+      const mutationConfig = createDataMutationConfig(operation);
+      const query = createDataMutationQuery(mutationConfig, excludeFields);
+      const variables = operation === 'delete' ?
+        createDataDeletionVariables(tableId, externalId) :
+        createDataMutationVariables(tableId, externalId, data);
 
       return ctx.graphql.query(query, variables)
         .then(result => {
           // we should convert data back into a javascript object
           try {
             if (result.data) {
-              let key;
-              if ('createTableData' in result.data) {
-                key = 'createTableData';
-              } else {
-                key = 'editTableData';
+              let resultData = result.data[mutationConfig.outputName];
+              if (resultData.tableData) {
+                resultData = resultData.tableData;
+                resultData.data = JSON.parse(resultData.data);
               }
-
-              retVal = {
+              return {
                 ok: true,
-                data: result.data[key].tableData
+                data: resultData
               };
-              retVal.data.data = JSON.parse(retVal.data.data);
-              return retVal;
             }
           } catch (e) {
             // do nothing
@@ -74,8 +76,30 @@ function mutateRow(ctx) {
   };
 }
 
-function upsertRow(ctx) {
+function createDataMutationConfig(operation) {
+  switch (operation) {
+    case 'add':
+      return {
+        mutationName: 'CreateTableData',
+        inputName: 'CreateTableDataInput',
+        outputName: 'createTableData',
+      };
+    case 'edit':
+      return {
+        mutationName: 'EditTableData',
+        inputName: 'EditTableDataInput',
+        outputName: 'editTableData',
+      };
+    case 'delete':
+      return {
+        mutationName: 'DeleteTableData',
+        inputName: 'DeleteTableDataInput',
+        outputName: 'deleteTableData',
+      };
+  }
+}
 
+function upsertRow(ctx) {
   return function (tableId, externalId, data, excludeFields) {
     const tableCtxId = table(ctx)(tableId);
     return tableCtxId.addRow(externalId, data, excludeFields)
@@ -92,34 +116,41 @@ function upsertRow(ctx) {
   };
 }
 
-function createDataMutationQuery(operation, excludeFields) {
-  let mutationName, inputName, outputName;
-  if (operation === 'add') {
-    mutationName = 'CreateTableData';
-    inputName = 'CreateTableDataInput';
-    outputName = 'createTableData';
-  } else if (operation === 'edit') {
-    mutationName = 'EditTableData';
-    inputName = 'EditTableDataInput';
-    outputName = 'editTableData';
-  }
-  let $filtered = (field) => {
-    return excludeFields.indexOf(field) !== -1
-  };
-  let query = `
-    mutation ${mutationName}($input: ${inputName}!) {
-      ${outputName}(input: $input) {
-        tableData {
-          ${ $filtered('id') ? '' : 'id\n'}
-          ${ $filtered('application') ? '' : 'application {\n  id\n}'}
-          ${ $filtered('data') ? '' : 'data\n'}
-          ${ $filtered('externalKey') ? '' : 'externalKey\n'}
-          ${ $filtered('table') ? '' : 'table {\n  id\n}'}
-        }
+function createDataMutationQuery(mutationConfig, excludeFields) {
+  const payload = mutationConfig.mutationName === 'DeleteTableData' ?
+    'count' :
+    createDataMutationPayload(excludeFields);
+  return `
+    mutation ${mutationConfig.mutationName}($input: ${mutationConfig.inputName}!) {
+      ${mutationConfig.outputName}(input: $input) {
+        ${payload}
       }
     }
   `;
-  return query;
+}
+
+function createDataMutationPayload(excludeFields) {
+  const $filtered = (field) => {
+    return excludeFields.indexOf(field) !== -1
+  };
+  return `
+        tableData {
+          ${$filtered('id') ? '' : 'id'}
+          ${$filtered('application') ? '' : 'application { id }'}
+          ${$filtered('data') ? '' : 'data'}
+          ${$filtered('externalKey') ? '' : 'externalKey'}
+          ${$filtered('table') ? '' : 'table { id }'}
+        }
+` ;
+}
+
+function createDataDeletionVariables(tableId, externalKeys) {
+  return {
+    input: {
+      externalKeys,
+      tableId,
+    }
+  }
 }
 
 function createDataMutationVariables(tableId, externalId, data) {
@@ -131,7 +162,6 @@ function createDataMutationVariables(tableId, externalId, data) {
     }
   }
 }
-
 
 function getDatum(ctx) {
   return function (tableId, externalKey) {
@@ -161,23 +191,23 @@ function getDatum(ctx) {
 
 const resultContainsError = (result) => {
   return result.errors ? true : false;
-}
+};
 
 const resultContainsErrorIgnorePsycoPGDuplicate = (result) => {
   return result.errors ? result.errors[0].message.indexOf('duplicate') === -1: false;
-}
+};
 
 
 const getMissingColumns = (columnsSubset, columnDefinitions) => {
   return columnDefinitions.filter((column) => {
     return !columnsSubset.includes(column.name);
   });
-}
+};
 
 const getColumnsToCreate = (ctx, appSlug, tableId, tableName, columnDefinitions) => {
   return ctx.graphql.query(createFindTableQuery(), createFindTableQueryVariables(tableName, appSlug))
     .then((result) => {
-      var columnsResult = result.data.node.table.columns;
+      const columnsResult = result.data.node.table.columns;
       return getMissingColumns(columnsResult, columnDefinitions);
     })
 };
@@ -200,7 +230,7 @@ const _createTableColumns = (ctx, appSlug, tableId, tableName, columnDefinitions
         return tableId;
       }
 
-      var tableColumnQueries = columns.map((columnData) => {
+      const tableColumnQueries = columns.map((columnData) => {
         columnData.input.tableId = tableId;
         return ctx.graphql.query(CREATE_TABLE_COLUMN_QUERY, columnData);
       });
@@ -238,7 +268,7 @@ function _createTable(ctx) {
         return _createTableColumns(ctx, appSlug, tableId, tableName, columnDefinitions);
     });
   };
-};
+}
 
 function _findTable(ctx) {
   return function(tableName, appSlug) {
@@ -255,7 +285,7 @@ function _findTable(ctx) {
 function _ensure(ctx) {
   return function(appSlug, tableName, tableDescription, columnDefinitions) {
       // TODO Support ColumnBuilder
-    
+
     return ctx.graphql.query(createFindTableQuery(), createFindTableQueryVariables(tableName, appSlug))
       .then((result) => {
         if (resultContainsError(result)) {
@@ -271,8 +301,7 @@ function _ensure(ctx) {
         return Promise.reject(err);
       });
     }
-};
-
+}
 
 function createGetTableDatumQuery() {
   return `
@@ -293,8 +322,6 @@ function createGetTableDatumVariables(table_id, externalKey) {
     externalKey
   }
 }
-
-
 
 const CREATE_TABLE_QUERY = `mutation CreateTable($input: CreateTableInput!) {
   createTable(input: $input) {

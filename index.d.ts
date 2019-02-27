@@ -41,7 +41,7 @@ declare module '@dronedeploy/function-wrapper' {
    * Interactions with a table.
    */
   export interface Table {
-    
+
     /**
      * Inserts a row
      *
@@ -60,6 +60,14 @@ declare module '@dronedeploy/function-wrapper' {
      */
     editRow(externalId: string, row: object): Promise<DatastoreResponse>;
 
+    /**
+     * Deletes a row
+     *
+     * @param {string} externalIds The external ID or list of external IDs
+     * @returns {Promise<module:dronedeploy/functions-wrapper.MutationResponse>}
+     */
+
+    deleteRows(externalIds: string | string[]): Promise<DatastoreResponse>;
     /**
      * Upserts a row
      *

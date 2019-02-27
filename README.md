@@ -80,6 +80,13 @@ Example Response for get
 ```javascript
 { ok: true, data: { name: 'Michael Hernandez' } }
 ```
+- deleteRows(externalKeys)
+
+Example Response for delete
+
+```javascript
+{ ok: true, data: { count: 1 } }
+```
 
 Example handler showing the aformentioned methods in use, also see file `examples/basic.js`
 
@@ -172,7 +179,7 @@ export default async function func(req: Request, res: Response) {
 Configuration
 ================
 Configuration in `.env` file:
-- `AUTH_REQUIRED=<boolean_string>`, set to true for testing or if your function does not use dd's api's
+- `AUTH_REQUIRED=<boolean_string>`, set to false for testing or if your function does not use dd's api's
 - `MOCK_TOKEN=<boolean_string>`, // set to true to allow token
 - `CORS_HEADERS=<comma_separated_headers>` // add custom headers that should be allowed past cors here
 
