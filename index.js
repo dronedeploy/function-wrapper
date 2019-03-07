@@ -20,7 +20,7 @@ const checkAuthentication = (config, res, token, ctx, cb) => {
       cb(null, ctx);
     })
     .catch(function (e) {
-      let message = "Authentication Error: An unexpected error has occurred, please contact support@dronedeploy.com"
+      let message = "Authentication Error: An unexpected error has occurred, please contact support@dronedeploy.com";
       let statusCode = 500;
       if (e instanceof jsonwebtoken.JsonWebTokenError) {
         // Can probably even make this more specific, however should be good for now.
@@ -30,6 +30,10 @@ const checkAuthentication = (config, res, token, ctx, cb) => {
       if (e instanceof authentication.WrongAudienceError) {
         message = 'Authentication Error: ' + e.message;
         statusCode = 401;
+      }
+
+      if (process.env.DEV === 'true' && e.stack) {
+        console.log(e.stack);
       }
 
       if (config.authRequired) {
