@@ -71,8 +71,8 @@ function wrapFunction(config, req, res, cb) {
   let ctx = req.ctx = {};
 
   if (config.mockToken) {
-    ctx.originalToken = '__change_in_handler__'
-    ctx.token = {}
+    ctx.originalToken = '__change_in_handler__';
+    ctx.token = {};
   }
 
   config.cors = config.cors || {};  // config that gets passed in is always set by user
@@ -105,7 +105,7 @@ function wrapFunction(config, req, res, cb) {
   try {
     token = jwt.parse(req);
   } catch (e) {
-    if (config.authRequired && !module.exports.__ignoreAuthForRoute(req.path)) {
+    if (config.authRequired && !ignoreAuthForRoute(config, req.path)) {
       res.status(401).send({
         error: {
           'message': 'Could not find user credentials.'
@@ -121,7 +121,7 @@ function wrapFunction(config, req, res, cb) {
 }
 
 
-const ignoreAuthForRoute = (route) => {
+const ignoreAuthForRoute = (config, route) => {
   if (config.ignoreAuthRoutes && config.ignoreAuthRoutes.length > 0) {
     return config.ignoreAuthRoutes.includes(route);
   }
