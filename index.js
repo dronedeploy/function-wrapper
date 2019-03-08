@@ -20,7 +20,7 @@ const checkAuthentication = (config, res, token, ctx, cb) => {
       cb(null, ctx);
     })
     .catch(function (e) {
-      let message = "Authentication Error: An unexpected error has occurred, please contact support@dronedeploy.com"
+      let message = "Authentication Error: An unexpected error has occurred, please contact support@dronedeploy.com";
       let statusCode = 500;
       if (e instanceof jsonwebtoken.JsonWebTokenError) {
         // Can probably even make this more specific, however should be good for now.
@@ -30,6 +30,10 @@ const checkAuthentication = (config, res, token, ctx, cb) => {
       if (e instanceof authentication.WrongAudienceError) {
         message = 'Authentication Error: ' + e.message;
         statusCode = 401;
+      }
+
+      if (process.env.DEV === 'true' && e.stack) {
+        console.log(e.stack);
       }
 
       if (config.authRequired) {
@@ -67,8 +71,8 @@ function wrapFunction(config, req, res, cb) {
   let ctx = req.ctx = {};
 
   if (config.mockToken) {
-    ctx.originalToken = '__change_in_handler__'
-    ctx.token = {}
+    ctx.originalToken = '__change_in_handler__';
+    ctx.token = {};
   }
 
   config.cors = config.cors || {};  // config that gets passed in is always set by user
@@ -101,7 +105,7 @@ function wrapFunction(config, req, res, cb) {
   try {
     token = jwt.parse(req);
   } catch (e) {
-    if (config.authRequired && !module.exports.__ignoreAuthForRoute(req.path)) {
+    if (config.authRequired && !ignoreAuthForRoute(config, req.path)) {
       res.status(401).send({
         error: {
           'message': 'Could not find user credentials.'
@@ -117,7 +121,7 @@ function wrapFunction(config, req, res, cb) {
 }
 
 
-const ignoreAuthForRoute = (route) => {
+const ignoreAuthForRoute = (config, route) => {
   if (config.ignoreAuthRoutes && config.ignoreAuthRoutes.length > 0) {
     return config.ignoreAuthRoutes.includes(route);
   }
