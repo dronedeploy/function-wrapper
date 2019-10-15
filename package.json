@@ -1,6 +1,6 @@
 {
   "name": "@dronedeploy/function-wrapper",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Public GraphQL API and Wrapper for Dronedeploy Functions",
   "homepage": "https://github.com/dronedeploy/function-wrapper",
   "repository": {
@@ -18,7 +18,7 @@
     "@types/express": "^4.16.0",
     "dotenv": "5.0.1",
     "jsonwebtoken": "~8.2.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "node-fetch": "2.1.2",
     "pem-jwk": "~1.5.1",
     "request": "2.88.0"
