@@ -99,6 +99,7 @@ function wrapFunction(config, req, res, cb) {
   // @TODO may want to put this behind a disable flag
   if (req.method === 'OPTIONS') {
     res.status(200).send();
+    return;
   }
 
   let token;
