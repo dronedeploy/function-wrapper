@@ -65,3 +65,7 @@ Release 1.1.7
   - Simplified function-wrapper `bootstrap` function (non-backwards compatable)
   - Update dependencies to address security vulnerability
   - Allow definition of custom CORS headers in `CORS_HEADERS` environment variable
+
+Release 1.2.5
+- Changes
+  - Fixed support for ignored auth routes
