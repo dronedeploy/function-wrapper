@@ -182,10 +182,20 @@ Configuration in `.env` file:
 - `AUTH_REQUIRED=<boolean_string>`, set to false for testing or if your function does not use dd's api's
 - `MOCK_TOKEN=<boolean_string>`, // set to true to allow token
 - `CORS_HEADERS=<comma_separated_headers>` // add custom headers that should be allowed past cors here
+- `IGNORE_AUTH_ROUTES=<comma_separated_routes>` // add routes to ignore while checking auth
 
 Example
 ```
 AUTH_REQUIRED=false
 MOCK_TOKEN=true
 CORS_HEADERS=x-custom-token,x-some-other-allowed-header
+IGNORE_AUTH_ROUTES=/route/1,/route/2
+```
+
+These env variables can be also set in the code:
+```javascript
+process.env.AUTH_REQUIRED = false
+process.env.MOCK_TOCKEN = true
+process.env.CORS_HEADERS = ['x-custom-token', 'x-some-other-allowed-header']
+process.env.AUTH_REQUIRED = ['/route/1', '/route/2']
 ```
