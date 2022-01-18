@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const token = process.argv[2]
-const request = require('request');
+const axios = require('axios').default;
 const env = process.env.NODE_ENV || 'prod'
 const subdomain = env == 'prod' ? 'www' : env
 
@@ -11,11 +11,8 @@ const body = {
   subject_token_type: 'urn:ietf:params:oauth:token-type:jwt',
   'scope': process.argv[3] || '_'
 }
-request({
-  uri: `https://${subdomain}.dronedeploy.com/api/v2/oauth2/token`,
-  json: true,
-  method: 'POST',
-  form: body
-}, (err, response, data) => {
-  console.log(err, data);
-})
+const headers = { 'Content-Type': 'application/json' };
+
+axios.post(`https://${subdomain}.dronedeploy.com/api/v2/oauth2/token`, body, { headers: headers })
+  .then(res => console.log(res.data))
+  .catch(err => console.log(err));

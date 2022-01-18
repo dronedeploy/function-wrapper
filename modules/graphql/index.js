@@ -1,4 +1,4 @@
-const request = require('request');
+const axios = require('axios').default;
 const api = require('../../helpers/api');
 
 module.exports = (ctx) => {
@@ -7,35 +7,28 @@ module.exports = (ctx) => {
   };
 };
 
-function _request(ctx) {
-  return function (params, cb) {
-    const baseUrl = api.getBaseUrl();
-    params.uri = `${baseUrl}/graphql`;
-    params.json = true;
-    params.method = 'POST';
-    params.headers = params.headers || {};
-    params.headers['Authorization'] = 'Bearer ' + ctx.originalToken;
-    request(params, (err, res, body) => {
-      cb(err, body);
-    });
-  }
+function _request(ctx, params) {
+  const baseUrl = api.getBaseUrl();
+  const headers = params.headers || {};
+  headers['Authorization'] = 'Bearer ' + ctx.originalToken;
+  headers['Content-Type'] = 'application/json';
+
+  return axios.post(
+    `${baseUrl}/graphql`,
+    params.body,
+    { headers: headers }
+  ).then(response => response.data);
 }
 
 function _query(ctx) {
   return function (query, variables) {
-    return new Promise((resolve, reject) => {
-      let body = {
-        query: query,
-        variables: variables
-      };
-      let params = {
-        body: body
-      };
-      _request(ctx)(params, (err, result) => {
-        if (err) return reject(err);
-        return resolve(result);
-      });
-    })
-
+    const body = {
+      query: query,
+      variables: variables
+    };
+    const params = {
+      body: body
+    };
+    return _request(ctx, params);
   }
 }
