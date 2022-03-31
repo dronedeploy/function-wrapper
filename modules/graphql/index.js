@@ -35,12 +35,9 @@ function _getRequestParams(ctx, query, variables) {
 
 function _query(ctx) {
   return function (query, variables) {
-    return new Promise((resolve, reject) => {
-      const params = _getRequestParams(ctx, query, variables);
-      _request(params)
-        .then((resp) => { return resolve(resp); })
-        .catch((err) => { return reject(err); });
-    });
-
+    const params = _getRequestParams(ctx, query, variables);
+    return _request(params)
+      .then((resp) => { return resp; })
+      .catch((err) => { return Promise.reject(err); });
   }
 }
