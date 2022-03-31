@@ -38,10 +38,8 @@ function _query(ctx) {
     return new Promise((resolve, reject) => {
       const params = _getRequestParams(ctx, query, variables);
       _request(params)
-        .then((resp) => resolve(resp))
-        .catch((err) => {
-          return reject(err);
-        });
+        .then((resp) => { return resolve(resp); })
+        .catch((err) => { return reject(err); });
     });
 
   }
