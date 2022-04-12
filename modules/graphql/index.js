@@ -1,4 +1,4 @@
-const request = require('request');
+const fetch = require('node-fetch');
 const api = require('../../helpers/api');
 
 module.exports = (ctx) => {
@@ -7,35 +7,38 @@ module.exports = (ctx) => {
   };
 };
 
-function _request(ctx) {
-  return function (params, cb) {
-    const baseUrl = api.getBaseUrl();
-    params.uri = `${baseUrl}/graphql`;
-    params.json = true;
-    params.method = 'POST';
-    params.headers = params.headers || {};
-    params.headers['Authorization'] = 'Bearer ' + ctx.originalToken;
-    request(params, (err, res, body) => {
-      cb(err, body);
+function _request(params) {
+  const url = `${api.getBaseUrl()}/graphql`;
+  
+  return fetch(url, params)
+    .then((response) => {
+      return response.json();
     });
+}
+
+function _getRequestParams(ctx, query, variables) {
+  const body = {
+    query: query,
+    variables: variables
+  };
+
+  const headers = {
+    'Authorization': `Bearer ${ctx.originalToken}`,
+  };
+
+  const params = {
+    body: JSON.stringify(body),
+    headers,
+    method: 'POST',
   }
+  return params;
 }
 
 function _query(ctx) {
   return function (query, variables) {
-    return new Promise((resolve, reject) => {
-      let body = {
-        query: query,
-        variables: variables
-      };
-      let params = {
-        body: body
-      };
-      _request(ctx)(params, (err, result) => {
-        if (err) return reject(err);
-        return resolve(result);
-      });
-    })
-
+    const params = _getRequestParams(ctx, query, variables);
+    return _request(params)
+      .then((resp) => { return resp; })
+      .catch((err) => { return Promise.reject(err); });
   }
 }
