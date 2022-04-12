@@ -22,8 +22,9 @@ function _getRequestParams(ctx, query, variables) {
     variables: variables
   };
 
-  const headers = params.headers || {};
-  headers['Authorization'] = 'Bearer ' + ctx.originalToken;
+  const headers = {
+    'Authorization': `Bearer ${ctx.originalToken}`,
+  };
 
   const params = {
     body: JSON.stringify(body),
