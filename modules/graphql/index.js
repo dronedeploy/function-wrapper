@@ -9,7 +9,7 @@ module.exports = (ctx) => {
 
 function _request(params) {
   const url = `${api.getBaseUrl()}/graphql`;
-  
+
   return fetch(url, params)
     .then((response) => {
       return response.json();
@@ -24,6 +24,7 @@ function _getRequestParams(ctx, query, variables) {
 
   const headers = {
     'Authorization': `Bearer ${ctx.originalToken}`,
+    'Content-Type': 'application/json',
   };
 
   const params = {
