@@ -69,3 +69,7 @@ Release 1.1.7
 Release 1.2.5
 - Changes
   - Fixed support for ignored auth routes
+
+Release 1.3.2
+- Changes
+  - Added loggin to authentication flow to help customer better understand issue they're experiencing
