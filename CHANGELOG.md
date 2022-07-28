@@ -72,4 +72,4 @@ Release 1.2.5
 
 Release 1.3.2
 - Changes
-  - Added loggin to authentication flow to help customer better understand issue they're experiencing
+  - Added logging to authentication flow to help customers better understand any issues
