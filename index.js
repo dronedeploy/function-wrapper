@@ -6,17 +6,20 @@ const authentication = require('./lib/authentication');
 const jsonwebtoken = require('jsonwebtoken');
 
 const checkAuthentication = (config, res, token, ctx, cb) => {
+  console.log("checking authentication...")
   const decryptTokenWithKeys = authentication.decryptTokenWithKeys.bind(undefined, token);
   module.exports.__getPublicKeys()
     .then(decryptTokenWithKeys)
     .then(function (decryptedToken) {
       let validAudience = module.exports.__verifyAudience(decryptedToken);
       if (!validAudience) {
-        throw new authentication.WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`);
+        console.log("WrongAudienceError: Token's audience did not match any for this function.");
+        throw new authentication.WrongAudienceError(`Token's audience ${decryptedToken.aud} did not match any for this function.`); //
       }
       ctx.originalToken = token;
       ctx.token = decryptedToken;
       modules.install(ctx);
+      console.log("authentication successful");
       cb(null, ctx);
     })
     .catch(function (e) {
@@ -31,6 +34,8 @@ const checkAuthentication = (config, res, token, ctx, cb) => {
         message = 'Authentication Error: ' + e.message;
         statusCode = 401;
       }
+
+      console.log(message);
 
       if (process.env.DEV === 'true' && e.stack) {
         console.log(e.stack);
@@ -105,8 +110,10 @@ function wrapFunction(config, req, res, cb) {
   let token;
   try {
     token = jwt.parse(req);
+    console.log("jwt successfully parsed");
   } catch (e) {
     if (config.authRequired && !ignoreAuthForRoute(config, req.path)) {
+      console.log("authentication is required and failed to successfully parse jwt");
       res.status(401).send({
         error: {
           'message': 'Could not find user credentials.'
