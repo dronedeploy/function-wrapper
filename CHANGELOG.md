@@ -73,3 +73,7 @@ Release 1.2.5
 Release 1.3.2
 - Changes
   - Added logging to authentication flow to help customers better understand any issues
+
+Release 1.3.3
+- Changes
+  - Bump jsonwebtoken from 8.2.2 to 9.0.0
