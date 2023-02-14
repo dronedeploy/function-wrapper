@@ -80,4 +80,4 @@ Release 1.3.3
 
 Release 1.3.4
 - Changes
-  - Bump express and @types/express
+  - Bump express from ^4.16.3 to 4.18.2 and @types/express from ^4.16.0 to 4.17.17
