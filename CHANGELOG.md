@@ -77,3 +77,7 @@ Release 1.3.2
 Release 1.3.3
 - Changes
   - Bump jsonwebtoken from 8.2.2 to 9.0.0
+
+Release 1.3.4
+- Changes
+  - Bump express from ^4.16.3 to 4.18.2 and @types/express from ^4.16.0 to 4.17.17
