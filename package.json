@@ -24,11 +24,10 @@
   "devDependencies": {
     "express": "5.0.1",
     "gts": "6.0.2",
-    "husky": "^0.14.3",
     "mocha": "11.1.0",
-    "pretty-quick": "^1.6.0",
+    "pretty-quick": "4.1.1",
     "sepia": "^2.0.2",
     "sinon": "20.0.0",
-    "typescript": "5.5.4"
+    "typescript": "^5.1.6"
   }
 }
